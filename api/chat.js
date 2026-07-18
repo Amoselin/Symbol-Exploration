@@ -44,6 +44,7 @@ export default async function handler(req, res) {
       ...(system ? { system_instruction: { parts: [{ text: system }] } } : {}),
       generationConfig: {
         maxOutputTokens: (req.body && req.body.max_tokens) || 1000,
+        thinkingConfig: { thinkingBudget: 0 }, // 關閉思考模式，避免內部推理過程混入回覆
       },
     };
 
@@ -69,9 +70,14 @@ export default async function handler(req, res) {
     }
 
     // 把 Gemini 的回覆格式，轉回前端認得的 Anthropic 風格格式
+    // 過濾掉 thought（內部推理）部分，只取真正要給使用者看的答案文字
     const candidate = data.candidates && data.candidates[0];
     const parts = (candidate && candidate.content && candidate.content.parts) || [];
-    const text = parts.map((p) => p.text || "").join("\n").trim();
+    const text = parts
+      .filter((p) => !p.thought)
+      .map((p) => p.text || "")
+      .join("\n")
+      .trim();
 
     if (!text) {
       res.status(500).json({ error: { message: "Gemini 回應中沒有文字內容（可能被安全機制擋下）" } });
