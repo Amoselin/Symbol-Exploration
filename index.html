@@ -46,11 +46,27 @@
 
   @media (prefers-reduced-motion: reduce){
     *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+    .ambient-particles{ display:none; }
   }
+
+  .ambient-particles{ position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:0; }
+  .ambient-particles span{
+    position:absolute; bottom:-6%; width:3px; height:3px; border-radius:50%;
+    background:var(--gold); opacity:0; box-shadow:0 0 6px 1px rgba(201,161,90,0.5);
+    animation:drift linear infinite;
+  }
+  @keyframes drift{
+    0%{ transform:translateY(0) translateX(0); opacity:0; }
+    8%{ opacity:0.55; }
+    92%{ opacity:0.4; }
+    100%{ transform:translateY(-112vh) translateX(var(--dx,20px)); opacity:0; }
+  }
+  #app{ position:relative; z-index:1; }
 
   #app{ max-width:760px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; padding:0 20px; }
   .screen{ display:none; flex:1; flex-direction:column; }
-  .screen.active{ display:flex; }
+  .screen.active{ display:flex; animation:screenIn .5s cubic-bezier(.2,.8,.2,1); }
+  @keyframes screenIn{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:translateY(0);} }
 
   /* ---------- Intro ---------- */
   #screen-intro{ justify-content:center; align-items:center; text-align:center; padding:48px 0; position:relative; }
@@ -107,22 +123,45 @@
 
   .card-spread{ display:flex; flex-wrap:wrap; gap:14px; justify-content:center; padding:6px 4px 10px; }
   .card{
-    position:relative; width:82px; height:110px; background:var(--paper); border-radius:8px;
-    border:1.5px solid transparent; display:flex; align-items:center; justify-content:center;
-    cursor:pointer; box-shadow:0 8px 18px rgba(0,0,0,0.32);
+    position:relative; width:82px; height:110px; perspective:700px;
     opacity:0; transform:translateY(26px) scale(0.75) rotate(0deg);
-    transition:transform .55s cubic-bezier(.2,.85,.25,1), opacity .4s ease, border-color .15s ease, box-shadow .2s ease;
+    transition:transform .55s cubic-bezier(.2,.85,.25,1), opacity .4s ease;
+    cursor:pointer;
   }
   .card.dealt{ opacity:1; transform:translateY(0) scale(1) rotate(var(--rot,0deg)); }
-  .card svg{ width:42px; height:42px; color:var(--ink); overflow:visible; }
-  .card.selected{ border-color:var(--seal); box-shadow:0 12px 24px rgba(178,58,46,0.35); }
+  .card-inner{
+    position:relative; width:100%; height:100%; transform-style:preserve-3d;
+    transition:transform .6s cubic-bezier(.3,.85,.3,1);
+  }
+  .card.revealed .card-inner{ transform:rotateY(180deg); }
+  .card-face{
+    position:absolute; inset:0; border-radius:8px; backface-visibility:hidden;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 8px 18px rgba(0,0,0,0.32); border:1.5px solid transparent;
+    transition:border-color .15s ease, box-shadow .2s ease;
+  }
+  .card-back{
+    background:
+      repeating-linear-gradient(45deg, rgba(201,161,90,0.08) 0 6px, transparent 6px 12px),
+      var(--bg-alt);
+    border-color:var(--line-onbg);
+  }
+  .card-back svg{ width:22px; height:22px; color:var(--gold); opacity:0.8; }
+  .card-front{ background:var(--paper); transform:rotateY(180deg); }
+  .card-front svg{ width:42px; height:42px; color:var(--ink); overflow:visible; }
+  .card.selected .card-face{ border-color:var(--seal); }
+  .card.selected::after{
+    content:""; position:absolute; inset:-6px; border-radius:12px; border:1.5px solid var(--seal);
+    opacity:0; pointer-events:none; animation:cardRing .5s ease-out;
+  }
+  @keyframes cardRing{ from{ transform:scale(0.92); opacity:0.8; } to{ transform:scale(1.1); opacity:0; } }
   .card.disabled{ opacity:0.35 !important; cursor:not-allowed; }
-  .card:hover:not(.disabled){ box-shadow:0 12px 26px rgba(0,0,0,0.4); }
+  .card:hover:not(.disabled) .card-face{ box-shadow:0 12px 26px rgba(0,0,0,0.42); }
   .seal-badge{
     position:absolute; top:-9px; right:-9px; width:26px; height:26px; border-radius:4px;
     background:var(--seal); color:#F6EFE3; font-family:'Noto Serif TC',serif; font-size:13px;
     display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.3);
-    transform:scale(0); animation:stamp .28s cubic-bezier(.2,1.6,.4,1) forwards; z-index:2;
+    transform:scale(0); animation:stamp .28s cubic-bezier(.2,1.6,.4,1) forwards; z-index:3;
   }
   @keyframes stamp{ from{ transform:scale(0) rotate(-14deg); opacity:0;} to{ transform:scale(1) rotate(-8deg); opacity:1;} }
 
@@ -148,6 +187,11 @@
   }
   .swatch:hover{ transform:scale(1.08); }
   .swatch.picked{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,161,90,0.18); }
+  .swatch.picked::after{
+    content:""; position:absolute; inset:-6px; border-radius:50%; border:2px solid var(--gold);
+    opacity:0; pointer-events:none; animation:ringPulse .5s ease-out;
+  }
+  @keyframes ringPulse{ from{ transform:scale(0.6); opacity:0.8; } to{ transform:scale(1.35); opacity:0; } }
   .swatch.none{ background:transparent; border:1.5px dashed var(--line-onbg); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--text-onbg-dim); }
 
   /* ---------- Dialogue ---------- */
@@ -166,7 +210,8 @@
   .topic-line b{ color:var(--text-onbg); font-weight:500; }
 
   .chat-scroll{ flex:1; overflow-y:auto; padding:6px 2px 20px; display:flex; flex-direction:column; gap:14px; }
-  .bubble{ max-width:82%; padding:14px 16px; border-radius:var(--radius); font-size:14.5px; line-height:1.85; white-space:pre-wrap; }
+  .bubble{ max-width:82%; padding:14px 16px; border-radius:var(--radius); font-size:14.5px; line-height:1.85; white-space:pre-wrap; animation:bubbleIn .4s cubic-bezier(.2,.8,.2,1); }
+  @keyframes bubbleIn{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:translateY(0);} }
   .bubble.assistant{ background:var(--paper); color:var(--ink); align-self:flex-start; border-top-left-radius:2px; }
   .bubble.user{ background:var(--seal-dim); color:var(--text-onbg); align-self:flex-end; border:1px solid rgba(178,58,46,0.35); border-top-right-radius:2px; }
   .bubble.err{ background:transparent; border:1px dashed var(--line-onbg); color:var(--text-onbg-dim); align-self:flex-start; }
@@ -197,6 +242,7 @@
 </style>
 </head>
 <body>
+<div class="ambient-particles" aria-hidden="true" id="ambient-particles"></div>
 <div id="app">
 
   <!-- Screen 0: Intro -->
@@ -402,6 +448,27 @@ const state = {
   history: []             // [{role, content}]
 };
 
+/* ===================== 氛圍星塵粒子 ===================== */
+(function initAmbientParticles(){
+  const layer = document.getElementById("ambient-particles");
+  const COUNT = 16;
+  for (let i = 0; i < COUNT; i++){
+    const span = document.createElement("span");
+    const left = Math.random() * 100;
+    const duration = 9 + Math.random() * 10;
+    const delay = Math.random() * 14;
+    const dx = (Math.random() * 40 - 20).toFixed(0) + "px";
+    const size = (1.5 + Math.random() * 2).toFixed(1) + "px";
+    span.style.left = left + "%";
+    span.style.width = size;
+    span.style.height = size;
+    span.style.setProperty("--dx", dx);
+    span.style.animationDuration = duration + "s";
+    span.style.animationDelay = "-" + delay + "s";
+    layer.appendChild(span);
+  }
+})();
+
 /* ===================== DOM helpers ===================== */
 const $ = (id) => document.getElementById(id);
 const screens = ["screen-intro","screen-topic","screen-symbols","screen-colors","screen-dialogue"];
@@ -423,6 +490,8 @@ $("btn-topic-next").addEventListener("click", () => {
   showScreen("screen-symbols");
 });
 
+const BACK_ICON = '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="24" cy="24" r="14"/><circle cx="24" cy="24" r="7"/></svg>';
+
 /* ===================== Screen 2: Symbols ===================== */
 function renderSymbolGrid(){
   const container = $("sym-grid-container");
@@ -439,17 +508,24 @@ function renderSymbolGrid(){
     card.dataset.name = name;
     const rot = (Math.random() * 10 - 5).toFixed(1);
     card.style.setProperty("--rot", `${rot}deg`);
-    card.innerHTML = iconSvg(name);
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-face card-back">${BACK_ICON}</div>
+        <div class="card-face card-front">${iconSvg(name)}</div>
+      </div>
+    `;
     card.addEventListener("click", () => toggleSymbol(name, card));
     spread.appendChild(card);
   });
 
   container.appendChild(spread);
 
-  // 洗牌後陸續攤開的動畫
+  // 洗牌攤開後，接著逐張翻牌顯示圖示
   const cards = spread.querySelectorAll(".card");
   cards.forEach((card, i) => {
-    setTimeout(() => card.classList.add("dealt"), 20 + i * 22);
+    const dealDelay = 20 + i * 22;
+    setTimeout(() => card.classList.add("dealt"), dealDelay);
+    setTimeout(() => card.classList.add("revealed"), dealDelay + 260);
   });
 
   refreshSymbolUI();
