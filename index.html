@@ -173,27 +173,42 @@
   .count-label b{ color:var(--gold); font-weight:600; }
 
   /* ---------- Color screen ---------- */
-  .color-row{ background:var(--bg-alt); border:1px solid var(--line-onbg); border-radius:var(--radius); padding:16px 18px; margin-bottom:12px; }
-  .color-row .sym-label{ display:flex; align-items:center; gap:10px; margin-bottom:12px; }
-  .color-row .badge-mini{
-    width:22px; height:22px; border-radius:4px; background:var(--seal); color:#F6EFE3;
-    font-family:'Noto Serif TC',serif; font-size:11.5px; display:flex; align-items:center; justify-content:center; flex:none;
+  .color-spread{ display:flex; flex-wrap:wrap; gap:24px; justify-content:center; padding:14px 4px 24px; }
+  .paint-card{
+    position:relative; background:var(--paper); border-radius:12px; width:152px;
+    padding:26px 14px 18px; display:flex; flex-direction:column; align-items:center; gap:16px;
+    box-shadow:0 12px 26px rgba(0,0,0,0.34);
   }
-  .color-row .sym-name{ font-family:'Noto Serif TC',serif; font-weight:600; font-size:16px; }
-  .swatches{ display:flex; flex-wrap:wrap; gap:10px; }
-  .swatch{
-    width:38px; height:38px; border-radius:50%; cursor:pointer; border:2px solid transparent;
+  .paint-card .num-badge{
+    position:absolute; top:-10px; left:-10px; width:26px; height:26px; border-radius:4px;
+    background:var(--seal); color:#F6EFE3; font-family:'Noto Serif TC',serif; font-size:13px;
+    display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.3); z-index:2;
+  }
+  .icon-paint{ position:relative; width:70px; height:70px; }
+  .icon-base, .icon-color{ position:absolute; inset:0; }
+  .icon-base svg, .icon-color svg{ width:100%; height:100%; overflow:visible; }
+  .icon-base{ color:var(--ink); opacity:0.85; }
+  .icon-color{
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path .6s cubic-bezier(.4,0,.2,1), color .3s ease;
+  }
+  .icon-color.filled{ clip-path: inset(0% 0 0 0); }
+  .paint-swatches{ display:flex; flex-wrap:wrap; gap:7px; justify-content:center; }
+  .paint-swatch{
+    width:22px; height:22px; border-radius:50%; cursor:pointer; border:2px solid transparent;
     position:relative; transition:transform .12s ease, border-color .12s ease;
   }
-  .swatch:hover{ transform:scale(1.08); }
-  .swatch.picked{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,161,90,0.18); }
-  .swatch.picked::after{
-    content:""; position:absolute; inset:-6px; border-radius:50%; border:2px solid var(--gold);
+  .paint-swatch:hover{ transform:scale(1.15); }
+  .paint-swatch.active{ border-color:var(--gold); box-shadow:0 0 0 2px rgba(201,161,90,0.2); }
+  .paint-swatch.active::after{
+    content:""; position:absolute; inset:-5px; border-radius:50%; border:1.5px solid var(--gold);
     opacity:0; pointer-events:none; animation:ringPulse .5s ease-out;
   }
   @keyframes ringPulse{ from{ transform:scale(0.6); opacity:0.8; } to{ transform:scale(1.35); opacity:0; } }
-  .swatch.none{ background:transparent; border:1.5px dashed var(--line-onbg); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--text-onbg-dim); }
-
+  .paint-swatch.clear{
+    background:transparent; border:1.5px dashed var(--line-onpaper); display:flex;
+    align-items:center; justify-content:center; font-size:9px; color:var(--ink-soft);
+  }
   /* ---------- Dialogue ---------- */
   #screen-dialogue{ padding-top:20px; }
   .seal-strip{
@@ -287,7 +302,7 @@
   <!-- Screen 3: Colors -->
   <section id="screen-colors" class="screen stage">
     <h2>要不要為某些符號上色？</h2>
-    <p class="sub">顏色不是必填，只挑真的有感覺的符號上色就好，其餘可以留白。</p>
+    <p class="sub">點下顏色，線條會被立刻染上那個顏色——不是必填，只挑真的有感覺的符號上色就好，其餘可以留白。</p>
     <div id="color-rows"></div>
     <div class="row-end">
       <button class="btn ghost" id="btn-back-2">返回</button>
@@ -497,6 +512,7 @@ function renderSymbolGrid(){
   const container = $("sym-grid-container");
   container.innerHTML = "";
   state.selected = [];
+  state.colorMap = {};
 
   const shuffledKeys = shuffleArray(Object.keys(SYMBOLS_RAW));
   const spread = document.createElement("div");
@@ -579,34 +595,62 @@ $("btn-sym-next").addEventListener("click", () => {
 function renderColorScreen(){
   const wrap = $("color-rows");
   wrap.innerHTML = "";
+  const spread = document.createElement("div");
+  spread.className = "color-spread";
+
   state.selected.forEach((name, i) => {
-    const row = document.createElement("div");
-    row.className = "color-row";
-    row.innerHTML = `
-      <div class="sym-label">
-        <span class="badge-mini">${NUMERALS[i]}</span>
-        <span class="sym-name">${name}</span>
+    const colorId = state.colorMap[name];
+    const colorInfo = colorId ? COLORS.find(c => c.id === colorId) : null;
+
+    const card = document.createElement("div");
+    card.className = "paint-card";
+    card.innerHTML = `
+      <div class="num-badge">${NUMERALS[i]}</div>
+      <div class="icon-paint" data-sym="${name}">
+        <div class="icon-base">${iconSvg(name)}</div>
+        <div class="icon-color${colorInfo ? " filled" : ""}" style="color:${colorInfo ? colorInfo.hex : "transparent"}">${iconSvg(name)}</div>
       </div>
-      <div class="swatches" data-sym="${name}"></div>
+      <span class="serif" style="font-size:15px; font-weight:600; color:var(--ink);">${name}</span>
+      <div class="paint-swatches" data-sym="${name}"></div>
     `;
-    const swatchWrap = row.querySelector(".swatches");
+
+    const swatchWrap = card.querySelector(".paint-swatches");
     COLORS.forEach(c => {
       const sw = document.createElement("div");
-      sw.className = "swatch";
+      sw.className = "paint-swatch" + (state.colorMap[name] === c.id ? " active" : "");
       sw.style.background = c.hex;
       sw.title = c.name;
-      if (state.colorMap[name] === c.id) sw.classList.add("picked");
-      sw.addEventListener("click", () => {
-        if (state.colorMap[name] === c.id){
-          delete state.colorMap[name];
-        } else {
-          state.colorMap[name] = c.id;
-        }
-        renderColorScreen();
-      });
+      sw.dataset.colorId = c.id;
+      sw.addEventListener("click", () => pickColor(name, c.id));
       swatchWrap.appendChild(sw);
     });
-    wrap.appendChild(row);
+
+    spread.appendChild(card);
+  });
+
+  wrap.appendChild(spread);
+}
+
+function pickColor(name, colorId){
+  const iconPaint = document.querySelector(`.icon-paint[data-sym="${name}"]`);
+  const swatchWrap = document.querySelector(`.paint-swatches[data-sym="${name}"]`);
+  if (!iconPaint || !swatchWrap) return;
+
+  const colorLayer = iconPaint.querySelector(".icon-color");
+  const isSame = state.colorMap[name] === colorId;
+
+  if (isSame){
+    delete state.colorMap[name];
+    colorLayer.classList.remove("filled");
+  } else {
+    state.colorMap[name] = colorId;
+    const info = COLORS.find(c => c.id === colorId);
+    colorLayer.style.color = info.hex;
+    colorLayer.classList.add("filled");
+  }
+
+  swatchWrap.querySelectorAll(".paint-swatch").forEach(sw => {
+    sw.classList.toggle("active", !isSame && sw.dataset.colorId === colorId);
   });
 }
 
