@@ -173,44 +173,29 @@
   .count-label b{ color:var(--gold); font-weight:600; }
 
   /* ---------- Color screen ---------- */
-  .color-spread{ display:flex; flex-wrap:wrap; gap:24px; justify-content:center; padding:14px 4px 24px; }
-  .paint-card{
-    position:relative; background:var(--paper); border-radius:12px; width:152px;
-    padding:26px 14px 18px; display:flex; flex-direction:column; align-items:center; gap:16px;
-    box-shadow:0 12px 26px rgba(0,0,0,0.34);
+  .color-row{ background:var(--bg-alt); border:1px solid var(--line-onbg); border-radius:var(--radius); padding:16px 18px; margin-bottom:12px; }
+  .color-row .sym-label{ display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+  .color-row .badge-mini{
+    width:22px; height:22px; border-radius:4px; background:var(--seal); color:#F6EFE3;
+    font-family:'Noto Serif TC',serif; font-size:11.5px; display:flex; align-items:center; justify-content:center; flex:none;
   }
-  .paint-card .num-badge{
-    position:absolute; top:-10px; left:-10px; width:26px; height:26px; border-radius:4px;
-    background:var(--seal); color:#F6EFE3; font-family:'Noto Serif TC',serif; font-size:13px;
-    display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.3); z-index:2;
-  }
-  .icon-paint{ position:relative; width:70px; height:70px; }
-  .icon-base, .icon-color{ position:absolute; inset:0; }
-  .icon-base svg, .icon-color svg{ width:100%; height:100%; overflow:visible; }
-  .icon-base{ color:var(--ink); opacity:0.85; }
-  .icon-color{
-    clip-path: inset(100% 0 0 0);
-    transition: clip-path .6s cubic-bezier(.4,0,.2,1), color .3s ease;
-  }
-  .icon-color.filled{ clip-path: inset(0% 0 0 0); }
-  .paint-swatches{ display:flex; flex-wrap:wrap; gap:7px; justify-content:center; }
-  .paint-swatch{
-    width:22px; height:22px; border-radius:50%; cursor:pointer; border:2px solid transparent;
+  .color-row .sym-name{ font-family:'Noto Serif TC',serif; font-weight:600; font-size:16px; }
+  .swatches{ display:flex; flex-wrap:wrap; gap:10px; }
+  .swatch{
+    width:38px; height:38px; border-radius:50%; cursor:pointer; border:2px solid transparent;
     position:relative; transition:transform .12s ease, border-color .12s ease;
   }
-  .paint-swatch:hover{ transform:scale(1.15); }
-  .paint-swatch.active{ border-color:var(--gold); box-shadow:0 0 0 2px rgba(201,161,90,0.2); }
-  .paint-swatch.active::after{
-    content:""; position:absolute; inset:-5px; border-radius:50%; border:1.5px solid var(--gold);
+  .swatch:hover{ transform:scale(1.08); }
+  .swatch.picked{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,161,90,0.18); }
+  .swatch.picked::after{
+    content:""; position:absolute; inset:-6px; border-radius:50%; border:2px solid var(--gold);
     opacity:0; pointer-events:none; animation:ringPulse .5s ease-out;
   }
   @keyframes ringPulse{ from{ transform:scale(0.6); opacity:0.8; } to{ transform:scale(1.35); opacity:0; } }
-  .paint-swatch.clear{
-    background:transparent; border:1.5px dashed var(--line-onpaper); display:flex;
-    align-items:center; justify-content:center; font-size:9px; color:var(--ink-soft);
-  }
+  .swatch.none{ background:transparent; border:1.5px dashed var(--line-onbg); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--text-onbg-dim); }
+
   /* ---------- Dialogue ---------- */
-  #screen-dialogue{ padding-top:20px; }
+  #screen-summary{ padding-top:20px; }
   .seal-strip{
     display:flex; align-items:center; gap:8px; overflow-x:auto; padding:10px 4px 16px;
     border-bottom:1px solid var(--line-onbg); margin-bottom:6px;
@@ -249,6 +234,72 @@
   .send-btn:disabled{ opacity:0.35; cursor:not-allowed; }
   .footer-note{ font-size:11.5px; color:var(--text-onbg-dim); opacity:0.75; text-align:center; padding-bottom:14px; line-height:1.6; }
 
+  /* ---------- Summary ---------- */
+  .summary-loading{
+    display:flex; align-items:center; gap:10px; color:var(--text-onbg-dim);
+    font-size:14px; padding:44px 4px; justify-content:center; text-align:center;
+  }
+  .summary-loading .ripple{
+    flex:none; width:9px; height:9px; border-radius:50%; background:var(--gold);
+    animation:pulse 1.2s ease-in-out infinite;
+  }
+
+  .summary-content{ display:flex; flex-direction:column; gap:20px; padding:4px 0 12px; }
+  .summary-section-title{
+    font-family:'Noto Serif TC', serif; font-size:14.5px; margin:0 0 12px; font-weight:600;
+    color:var(--gold); letter-spacing:0.04em;
+  }
+  .summary-card{
+    background:var(--paper); color:var(--ink); border-radius:var(--radius);
+    padding:20px 22px; box-shadow:var(--shadow);
+  }
+  .summary-card h3{
+    font-family:'Noto Serif TC', serif; font-size:14.5px; margin:0 0 10px; font-weight:700;
+    color:var(--seal); letter-spacing:0.04em;
+  }
+  .summary-card p{ margin:0; font-size:14.5px; line-height:1.9; white-space:pre-wrap; }
+
+  .symbol-cards{ display:flex; flex-direction:column; gap:12px; }
+  .symbol-card{
+    background:var(--paper); border-radius:var(--radius); padding:16px 18px;
+    display:flex; gap:14px; box-shadow:0 6px 16px rgba(0,0,0,0.22);
+  }
+  .symbol-card .sym-icon-wrap{
+    flex:none; width:46px; height:46px; border-radius:8px; background:var(--bg-alt);
+    display:flex; align-items:center; justify-content:center; position:relative;
+  }
+  .symbol-card .sym-icon-wrap svg{ width:26px; height:26px; color:var(--text-onbg); }
+  .symbol-card .sym-icon-wrap.colored svg{ color:var(--sym-color, var(--text-onbg)); }
+  .symbol-card .color-dot{
+    position:absolute; bottom:-4px; right:-4px; width:14px; height:14px; border-radius:50%;
+    border:2px solid var(--paper);
+  }
+  .symbol-card .sym-body{ flex:1; min-width:0; }
+  .symbol-card .sym-title{ display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap; }
+  .symbol-card .sym-title .num{
+    width:20px; height:20px; border-radius:4px; background:var(--seal); color:#F6EFE3;
+    font-family:'Noto Serif TC',serif; font-size:11px; display:flex; align-items:center;
+    justify-content:center; flex:none;
+  }
+  .symbol-card .sym-title b{ font-family:'Noto Serif TC',serif; font-size:15.5px; color:var(--ink); }
+  .symbol-card .sym-title .tag-color{ font-size:11.5px; color:var(--ink-soft); }
+  .symbol-card p{ margin:0; font-size:14px; line-height:1.85; color:var(--ink); white-space:pre-wrap; }
+
+  .crisis-box{
+    background:var(--seal-dim); border:1px solid rgba(178,58,46,0.4); border-radius:var(--radius);
+    padding:22px 22px;
+  }
+  .crisis-box h3{
+    font-family:'Noto Serif TC', serif; margin:0 0 10px; color:var(--seal); font-size:15px;
+  }
+  .crisis-box p{ margin:0 0 14px; font-size:14.5px; line-height:1.9; color:var(--text-onbg); }
+  .crisis-box .hotlines{ font-size:13.5px; color:var(--text-onbg-dim); line-height:2; }
+
+  .summary-error-box{
+    border:1px dashed var(--line-onbg); border-radius:var(--radius); padding:18px 20px;
+    color:var(--text-onbg-dim); font-size:14px; line-height:1.8; margin-top:8px;
+  }
+
   @media (max-width:520px){
     #screen-intro h1{ font-size:34px; }
     .stage h2{ font-size:22px; }
@@ -265,7 +316,7 @@
     <div class="moon-glow" aria-hidden="true"></div>
     <div class="eyebrow">符 號 陪 伴</div>
     <h1>先別急著找答案，<br/>讓符號陪你看一看現在的自己。</h1>
-    <p class="lede">選幾張有感覺的符號，替其中一些上色，接著我們會用一連串安靜的提問，陪你一起把模糊的感受，慢慢說清楚。</p>
+    <p class="lede">選幾張有感覺的符號，替其中一些上色，接著我們會根據你想探索的議題，為你寫下一份完整的陪伴總結。</p>
     <button class="btn" id="btn-start">開始探索</button>
     <p class="disclaimer">本工具融合榮格原型理論、繪畫心理學與色彩心理學的參考語言，用於自我覺察與陪伴引導，並非心理治療或醫療診斷。若你正經歷急迫的情緒困擾，請撥打安心專線 1925 或生命線 1995，尋求專業協助。</p>
   </section>
@@ -302,7 +353,7 @@
   <!-- Screen 3: Colors -->
   <section id="screen-colors" class="screen stage">
     <h2>要不要為某些符號上色？</h2>
-    <p class="sub">點下顏色，線條會被立刻染上那個顏色——不是必填，只挑真的有感覺的符號上色就好，其餘可以留白。</p>
+    <p class="sub">顏色不是必填，只挑真的有感覺的符號上色就好，其餘可以留白。</p>
     <div id="color-rows"></div>
     <div class="row-end">
       <button class="btn ghost" id="btn-back-2">返回</button>
@@ -310,18 +361,24 @@
     </div>
   </section>
 
-  <!-- Screen 4: Dialogue -->
-  <section id="screen-dialogue" class="screen">
+  <!-- Screen 4: Summary -->
+  <section id="screen-summary" class="screen stage">
     <div class="seal-strip" id="seal-strip"></div>
     <div class="topic-line">你想探索的議題：<b id="topic-echo"></b></div>
-    <div class="chat-scroll" id="chat-scroll"></div>
-    <div class="composer">
-      <textarea id="chat-input" rows="1" placeholder="說說你的想法……"></textarea>
-      <button class="send-btn" id="btn-send" aria-label="送出">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 12L20 4L13 20L11 13L4 12Z" fill="currentColor"/></svg>
-      </button>
+
+    <div id="summary-loading" class="summary-loading">
+      <span class="ripple"></span>正在把你選擇的符號與顏色，靜靜地編織成一段回應……
     </div>
-    <p class="footer-note">此對話由 AI 生成，僅作自我探索陪伴之用，非心理治療或診斷。如有急迫情緒困擾，請撥打安心專線 1925。</p>
+
+    <div id="summary-content" class="summary-content" style="display:none;"></div>
+
+    <div id="summary-error"></div>
+
+    <div class="row-end" id="summary-actions" style="display:none; justify-content:flex-end;">
+      <button class="btn ghost" id="btn-restart">重新開始一次</button>
+    </div>
+
+    <p class="footer-note">此內容由 AI 生成，僅作自我探索陪伴之用，非心理治療或診斷。如有急迫情緒困擾，請撥打安心專線 1925。</p>
   </section>
 
 </div>
@@ -486,7 +543,7 @@ const state = {
 
 /* ===================== DOM helpers ===================== */
 const $ = (id) => document.getElementById(id);
-const screens = ["screen-intro","screen-topic","screen-symbols","screen-colors","screen-dialogue"];
+const screens = ["screen-intro","screen-topic","screen-symbols","screen-colors","screen-summary"];
 function showScreen(id){
   screens.forEach(s => $(s).classList.toggle("active", s === id));
   window.scrollTo({top:0});
@@ -512,7 +569,6 @@ function renderSymbolGrid(){
   const container = $("sym-grid-container");
   container.innerHTML = "";
   state.selected = [];
-  state.colorMap = {};
 
   const shuffledKeys = shuffleArray(Object.keys(SYMBOLS_RAW));
   const spread = document.createElement("div");
@@ -595,72 +651,71 @@ $("btn-sym-next").addEventListener("click", () => {
 function renderColorScreen(){
   const wrap = $("color-rows");
   wrap.innerHTML = "";
-  const spread = document.createElement("div");
-  spread.className = "color-spread";
-
   state.selected.forEach((name, i) => {
-    const colorId = state.colorMap[name];
-    const colorInfo = colorId ? COLORS.find(c => c.id === colorId) : null;
-
-    const card = document.createElement("div");
-    card.className = "paint-card";
-    card.innerHTML = `
-      <div class="num-badge">${NUMERALS[i]}</div>
-      <div class="icon-paint" data-sym="${name}">
-        <div class="icon-base">${iconSvg(name)}</div>
-        <div class="icon-color${colorInfo ? " filled" : ""}" style="color:${colorInfo ? colorInfo.hex : "transparent"}">${iconSvg(name)}</div>
+    const row = document.createElement("div");
+    row.className = "color-row";
+    row.innerHTML = `
+      <div class="sym-label">
+        <span class="badge-mini">${NUMERALS[i]}</span>
+        <span class="sym-name">${name}</span>
       </div>
-      <span class="serif" style="font-size:15px; font-weight:600; color:var(--ink);">${name}</span>
-      <div class="paint-swatches" data-sym="${name}"></div>
+      <div class="swatches" data-sym="${name}"></div>
     `;
-
-    const swatchWrap = card.querySelector(".paint-swatches");
+    const swatchWrap = row.querySelector(".swatches");
     COLORS.forEach(c => {
       const sw = document.createElement("div");
-      sw.className = "paint-swatch" + (state.colorMap[name] === c.id ? " active" : "");
+      sw.className = "swatch";
       sw.style.background = c.hex;
       sw.title = c.name;
-      sw.dataset.colorId = c.id;
-      sw.addEventListener("click", () => pickColor(name, c.id));
+      if (state.colorMap[name] === c.id) sw.classList.add("picked");
+      sw.addEventListener("click", () => {
+        if (state.colorMap[name] === c.id){
+          delete state.colorMap[name];
+        } else {
+          state.colorMap[name] = c.id;
+        }
+        renderColorScreen();
+      });
       swatchWrap.appendChild(sw);
     });
-
-    spread.appendChild(card);
-  });
-
-  wrap.appendChild(spread);
-}
-
-function pickColor(name, colorId){
-  const iconPaint = document.querySelector(`.icon-paint[data-sym="${name}"]`);
-  const swatchWrap = document.querySelector(`.paint-swatches[data-sym="${name}"]`);
-  if (!iconPaint || !swatchWrap) return;
-
-  const colorLayer = iconPaint.querySelector(".icon-color");
-  const isSame = state.colorMap[name] === colorId;
-
-  if (isSame){
-    delete state.colorMap[name];
-    colorLayer.classList.remove("filled");
-  } else {
-    state.colorMap[name] = colorId;
-    const info = COLORS.find(c => c.id === colorId);
-    colorLayer.style.color = info.hex;
-    colorLayer.classList.add("filled");
-  }
-
-  swatchWrap.querySelectorAll(".paint-swatch").forEach(sw => {
-    sw.classList.toggle("active", !isSame && sw.dataset.colorId === colorId);
+    wrap.appendChild(row);
   });
 }
 
 $("btn-back-2").addEventListener("click", () => showScreen("screen-symbols"));
 $("btn-color-next").addEventListener("click", () => {
-  beginDialogue();
+  beginSummary();
 });
 
-/* ===================== Screen 4: Dialogue ===================== */
+/* ===================== Screen 4: Summary ===================== */
 function buildSystemPrompt(){
+  return `你是「符號陪伴」，一位以榮格心理學原型理論、繪畫心理學（如屋樹人測驗）與色彩心理學為參考語言的自我探索陪伴引導者。
+
+你的任務：根據使用者提出的議題，以及他們依序選擇的符號（可能有上色），寫出「一次性」的完整陪伴總結，而不是提出問題或展開多輪對話。
+
+【規則，請務必全程遵守】
+1. 你的角色是安靜陪伴的引導者，不是心理治療師，全程不做診斷、不貼病名標籤、不下絕對結論。
+2. 稱呼使用者用「你」，不要用「您」。
+3. 語氣溫暖、真誠、不評判，避免心理學術語堆疊；每個符號的解讀角度盡量不要重複同一種句型。
+4. 明確讓使用者知道，符號與心理狀態的對應只是一種「參考的心理學語言」，不是絕對真理，答案最終要回到使用者自己身上——這件事在 closing 欄位自然地帶到一次就好。
+5. 絕對不能做醫療建議或診斷。若使用者在議題描述中透露出自傷、自殺意念或急性心理危機的跡象，請將 crisis 設為 true，並在 crisis_message 中先給予關懷與陪伴，明確建議聯繫專業資源（安心專線1925、生命線1995、張老師專線1980）；此時其餘欄位可以留空或非常簡短，不要進行符號解讀。
+6. 使用繁體中文。
+7. 絕對只能回傳「純 JSON」，不要有任何 JSON 以外的文字或說明，也不要加上 \`\`\`json 這類的標記，整個回覆必須是可以直接被 JSON.parse() 解析的內容。
+
+【JSON 格式，請完全依照這個結構回傳，欄位名稱不可更動】
+{
+  "crisis": false,
+  "crisis_message": "",
+  "overall": "看完使用者整組符號與順序後，給一段2-4句話的整體印象與氛圍描述",
+  "symbols": [
+    { "name": "符號名稱（需與提供的符號名稱完全一致）", "color": "顏色名稱，若沒上色則為空字串", "reading": "針對這個符號（若有上色則一併納入顏色的意涵）給1-3句貼近使用者議題的解讀，避免制式化開頭，每張牌的切入角度盡量不一樣" }
+  ],
+  "topic_connection": "3-5句話，具體地把符號組合的整體樣貌，跟使用者最初想探索的議題連在一起，給出一個溫和但有洞察力的觀察",
+  "closing": "2-4句話的陪伴式結語，可以留一個開放式的反思問題讓使用者帶著走，語氣真誠但不要每次都用同一種驚嘆語氣"
+}`;
+}
+
+function buildUserContent(){
   const orderLines = state.selected.map((name, i) => {
     const d = SYMBOLS_RAW[name];
     const colorId = state.colorMap[name];
@@ -670,25 +725,13 @@ function buildSystemPrompt(){
     return line;
   }).join("\n");
 
-  return `你是「符號陪伴」，一位以榮格心理學原型理論、繪畫心理學（如屋樹人測驗）與色彩心理學為參考語言的自我探索陪伴引導者。
-
-【使用者想探索的議題】
+  return `【使用者想探索的議題】
 ${state.topic}
 
 【使用者依序選擇的符號（及上色情形）】
 ${orderLines}
 
-【引導規則，請務必全程遵守】
-1. 你的角色是安靜陪伴的引導者，不是心理治療師，全程不做診斷、不貼標籤、不下結論。
-2. 稱呼使用者用「你」，不要用「您」——「您」聽起來疏遠、公式化，「你」才像朋友在說話。
-3. 絕對禁止每次都用同一種公式開頭，例如「聽到你說『XXX』，感覺⋯」或「當你提到『XXX』⋯」。不要機械式地把使用者剛剛講的字句原封不動放進引號裡覆述一遍——這樣讀起來像在跑話術模板，不像真的有人在聽。試著讓每一輪的開場都長得不一樣：有時候直接從一個感受切入，有時候分享你當下的一個小小聯想或畫面，有時候就直接問，不需要每次都先摘要對方講的話。
-4. 提問角度要多變，不要每次都問「這對你來說意味著什麼」。可以問具體的畫面、身體的感覺、一段回憶、跟其他符號或顏色的關聯、一個假設性的「如果⋯會怎樣」，或者單純安靜地陪一句、晚一點再問下一題也可以。
-5. 可以輕巧地引用使用者選的符號、順序、顏色作為提問的引子，但每次只聚焦一個切入點；也可以不引用符號，直接順著使用者剛剛說的內容走下去。
-6. 每隔幾輪，適度把話題輕輕帶回使用者最初想探索的議題，或整體符號組合的全貌，避免整段對話變成只針對使用者最後一句話做文字接龍。
-7. 可以誠實地表達你當下的感受或好奇（例如「這讓我有點好奇」、「聽到這裡我有點心疼」），讓陪伴感是真的，但不要每次都用同一種驚嘆語氣，也不要過度戲劇化。
-8. 明確讓使用者知道，符號與心理狀態的對應只是一種「參考的心理學語言」，不是絕對真理，答案最終要回到使用者自己身上——這件事偶爾自然地提一次就好，不用每則重複。
-9. 絕對不能做醫療建議或診斷。若使用者的話語透露自傷、自殺意念或急性心理危機的跡象，該輪請先給予關懷與陪伴，明確建議聯繫專業資源（例如安心專線1925、生命線1995、張老師專線1980），且那一輪不要再問探索性問題。
-10. 使用繁體中文，語氣溫暖、真誠、不評判，避免心理學術語堆疊，回覆長度保持精簡，通常2-4句話以內。`;
+請依照 system prompt 裡的規則與 JSON 格式，給我一次完整的結構化總結，只回傳 JSON。`;
 }
 
 function renderSealStrip(){
@@ -711,41 +754,118 @@ function renderSealStrip(){
   $("topic-echo").textContent = state.topic;
 }
 
-function appendBubble(role, text, isErr){
-  const scroll = $("chat-scroll");
-  const b = document.createElement("div");
-  b.className = "bubble " + (isErr ? "err" : role);
-  b.textContent = text;
-  scroll.appendChild(b);
-  scroll.scrollTop = scroll.scrollHeight;
-  return b;
+function escapeHtml(str){
+  const div = document.createElement("div");
+  div.textContent = str == null ? "" : String(str);
+  return div.innerHTML;
 }
 
-function setTyping(on){
-  let el = document.getElementById("typing-indicator");
-  if (on){
-    if (el) return;
-    el = document.createElement("div");
-    el.id = "typing-indicator";
-    el.className = "typing";
-    el.innerHTML = `<span class="ripple"></span>沉思中……`;
-    $("chat-scroll").appendChild(el);
-    $("chat-scroll").scrollTop = $("chat-scroll").scrollHeight;
-  } else {
-    if (el) el.remove();
+function makeCard(title, text){
+  const card = document.createElement("div");
+  card.className = "summary-card";
+  card.innerHTML = `<h3>${escapeHtml(title)}</h3><p>${escapeHtml(text)}</p>`;
+  return card;
+}
+
+function renderSummary(data){
+  const wrap = $("summary-content");
+  wrap.innerHTML = "";
+
+  if (data && data.crisis){
+    const box = document.createElement("div");
+    box.className = "crisis-box";
+    box.innerHTML = `
+      <h3>先照顧好自己</h3>
+      <p>${escapeHtml(data.crisis_message || "聽起來你現在正承受著不小的重量。這不是你一個人需要扛下來的事，如果可以，讓專業的人陪你一起面對。")}</p>
+      <div class="hotlines">
+        安心專線：1925（24小時）<br/>
+        生命線：1995<br/>
+        張老師專線：1980
+      </div>
+    `;
+    wrap.appendChild(box);
+    $("summary-actions").style.display = "flex";
+    return;
   }
+
+  if (data && data.overall){
+    wrap.appendChild(makeCard("整體印象", data.overall));
+  }
+
+  if (data && Array.isArray(data.symbols) && data.symbols.length){
+    const section = document.createElement("div");
+    const heading = document.createElement("h3");
+    heading.className = "summary-section-title";
+    heading.textContent = "符號逐一解讀";
+    section.appendChild(heading);
+
+    const cardsWrap = document.createElement("div");
+    cardsWrap.className = "symbol-cards";
+    data.symbols.forEach((s, i) => {
+      const colorInfo = COLORS.find(c => c.name === s.color);
+      const card = document.createElement("div");
+      card.className = "symbol-card";
+      const iconWrap = document.createElement("div");
+      iconWrap.className = "sym-icon-wrap" + (colorInfo ? " colored" : "");
+      if (colorInfo) iconWrap.style.setProperty("--sym-color", colorInfo.hex);
+      iconWrap.innerHTML = iconSvg(s.name);
+      if (colorInfo){
+        const dot = document.createElement("span");
+        dot.className = "color-dot";
+        dot.style.background = colorInfo.hex;
+        iconWrap.appendChild(dot);
+      }
+
+      const body = document.createElement("div");
+      body.className = "sym-body";
+      body.innerHTML = `
+        <div class="sym-title">
+          <span class="num">${NUMERALS[i] || (i+1)}</span>
+          <b>${escapeHtml(s.name)}</b>
+          ${s.color ? `<span class="tag-color">・${escapeHtml(s.color)}</span>` : ""}
+        </div>
+        <p>${escapeHtml(s.reading)}</p>
+      `;
+      card.appendChild(iconWrap);
+      card.appendChild(body);
+      cardsWrap.appendChild(card);
+    });
+    section.appendChild(cardsWrap);
+    wrap.appendChild(section);
+  }
+
+  if (data && data.topic_connection){
+    wrap.appendChild(makeCard("與你議題的呼應", data.topic_connection));
+  }
+
+  if (data && data.closing){
+    wrap.appendChild(makeCard("陪伴的話", data.closing));
+  }
+
+  $("summary-actions").style.display = "flex";
+}
+
+function parseJsonLoose(text){
+  let cleaned = text.trim();
+  cleaned = cleaned.replace(/^```json\s*/i, "").replace(/^```\s*/, "").replace(/```\s*$/, "");
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+  if (start > -1 && end > -1 && end > start){
+    cleaned = cleaned.slice(start, end + 1);
+  }
+  return JSON.parse(cleaned);
 }
 
 function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
-async function requestClaudeOnce(){
+async function requestSummaryOnce(){
   const payload = {
     model: MODEL,
-    max_tokens: 1000,
+    max_tokens: 1800,
     system: state.systemPrompt,
-    messages: state.history
+    messages: [{ role: "user", content: buildUserContent() }]
   };
-  console.log("Claude request payload:", payload);
+  console.log("Summary request payload:", payload);
   const response = await fetch(API_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -757,7 +877,7 @@ async function requestClaudeOnce(){
   } catch (parseErr){
     throw new Error(`回應不是有效的 JSON（HTTP ${response.status}）`);
   }
-  console.log("Claude response:", response.status, data);
+  console.log("Summary response:", response.status, data);
   if (!response.ok){
     const msg = (data && data.error && data.error.message) ? data.error.message : `HTTP ${response.status}`;
     throw new Error(msg);
@@ -768,82 +888,55 @@ async function requestClaudeOnce(){
   const textBlocks = (data.content || []).filter(b => b.type === "text").map(b => b.text);
   const text = textBlocks.join("\n").trim();
   if (!text) throw new Error("API 回應中沒有文字內容");
-  return text;
+
+  try {
+    return parseJsonLoose(text);
+  } catch (e){
+    console.error("JSON parse failed, raw text was:", text);
+    throw new Error("模型回覆的內容格式異常，無法解析為結構化總結");
+  }
 }
 
-async function callClaude(){
-  setTyping(true);
-  $("btn-send").disabled = true;
+async function fetchSummary(){
+  $("summary-loading").style.display = "flex";
+  $("summary-content").style.display = "none";
+  $("summary-error").innerHTML = "";
+  $("summary-actions").style.display = "none";
+
   const MAX_ATTEMPTS = 3;
   let lastErr = null;
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++){
     try {
-      const text = await requestClaudeOnce();
-      state.history.push({ role: "assistant", content: text });
-      appendBubble("assistant", text);
-      setTyping(false);
-      $("btn-send").disabled = false;
+      const data = await requestSummaryOnce();
+      $("summary-loading").style.display = "none";
+      $("summary-content").style.display = "flex";
+      renderSummary(data);
       return;
     } catch (err){
       lastErr = err;
-      console.error(`Claude API error (attempt ${attempt}/${MAX_ATTEMPTS}):`, err);
+      console.error(`Summary fetch error (attempt ${attempt}/${MAX_ATTEMPTS}):`, err);
       if (attempt < MAX_ATTEMPTS){
         await sleep(attempt * 1000);
       }
     }
   }
-  setTyping(false);
-  $("btn-send").disabled = false;
-  const errBubble = appendBubble("assistant", `（連續 ${MAX_ATTEMPTS} 次都無法取得回覆，錯誤內容：${lastErr.message}。這通常是暫時性的伺服器問題，可以按下方按鈕再試一次。）`, true);
-  const retryBtn = document.createElement("button");
-  retryBtn.className = "btn ghost";
-  retryBtn.style.marginTop = "10px";
-  retryBtn.style.fontSize = "13px";
-  retryBtn.style.padding = "8px 18px";
-  retryBtn.textContent = "重試";
-  retryBtn.addEventListener("click", () => {
-    errBubble.remove();
-    retryBtn.remove();
-    callClaude();
-  });
-  errBubble.appendChild(document.createElement("br"));
-  errBubble.appendChild(retryBtn);
+
+  $("summary-loading").style.display = "none";
+  const errBox = $("summary-error");
+  errBox.innerHTML = `<div class="summary-error-box">（連續 ${MAX_ATTEMPTS} 次都無法取得總結，錯誤內容：${escapeHtml(lastErr.message)}。這通常是暫時性的伺服器問題，可以按下方按鈕再試一次。）</div>`;
+  $("summary-actions").style.display = "flex";
 }
 
-function beginDialogue(){
+function beginSummary(){
   state.systemPrompt = buildSystemPrompt();
-  state.history = [{
-    role: "user",
-    content: "（使用者剛完成符號與顏色的選擇，尚未開始對話。）請先用1-2句話，溫和地回應這個選擇本身所傳遞出的感覺，然後提出第一個開放式問題，陪我開始談談我想探索的議題。"
-  }];
-  $("chat-scroll").innerHTML = "";
   renderSealStrip();
-  showScreen("screen-dialogue");
-  callClaude();
+  showScreen("screen-summary");
+  fetchSummary();
 }
 
-const chatInput = $("chat-input");
-chatInput.addEventListener("input", () => {
-  chatInput.style.height = "auto";
-  chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + "px";
+$("btn-restart").addEventListener("click", () => {
+  location.reload();
 });
-chatInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !e.shiftKey){
-    e.preventDefault();
-    sendUserMessage();
-  }
-});
-$("btn-send").addEventListener("click", sendUserMessage);
-
-function sendUserMessage(){
-  const text = chatInput.value.trim();
-  if (!text) return;
-  state.history.push({ role: "user", content: text });
-  appendBubble("user", text);
-  chatInput.value = "";
-  chatInput.style.height = "auto";
-  callClaude();
-}
 </script>
 </body>
 </html>
