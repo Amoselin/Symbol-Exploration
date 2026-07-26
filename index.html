@@ -82,6 +82,21 @@
   #screen-intro h1{ font-size:44px; margin:0 0 14px; font-weight:600; }
   .lede{ color:var(--text-onbg-dim); font-size:15.5px; line-height:1.9; max-width:480px; margin:0 auto 30px; }
   .disclaimer{ font-size:12.5px; color:var(--text-onbg-dim); opacity:0.75; max-width:440px; line-height:1.7; margin:26px auto 0; }
+  .history-link{
+    display:block; margin:16px auto 0; background:none; border:none; color:var(--text-onbg-dim);
+    font-size:13px; cursor:pointer; text-decoration:underline; text-underline-offset:3px;
+    transition:color .15s ease;
+  }
+  .history-link:hover{ color:var(--gold); }
+
+  .history-card{
+    background:var(--bg-alt); border:1px solid var(--line-onbg); border-radius:8px;
+    padding:16px 18px; margin-bottom:14px;
+  }
+  .history-date{ font-size:11.5px; color:var(--text-onbg-dim); margin-bottom:4px; }
+  .history-topic{ font-family:'Noto Serif TC',serif; font-size:16px; color:var(--text-onbg); margin-bottom:8px; }
+  .history-actions{ display:flex; gap:10px; margin-top:12px; }
+  .btn.small{ padding:7px 14px; font-size:12.5px; }
 
   /* ---------- Shared ---------- */
   .stage{ padding:56px 0 28px; }
@@ -262,7 +277,19 @@
     <h1>先別急著找答案，<br/>讓符號陪你看一看現在的自己。</h1>
     <p class="lede">選幾張有感覺的符號，替其中一些上色，接著我們會一起，用溫柔的節奏，把模糊的感受慢慢說清楚。</p>
     <button class="btn" id="btn-start">開始探索</button>
+    <button class="history-link" id="btn-view-history" type="button">📖 查看過去的探索紀錄</button>
     <p class="disclaimer">本工具融合榮格原型理論、繪畫心理學與色彩心理學的參考語言，用於自我覺察與陪伴引導，並非心理治療或醫療診斷。若你正經歷急迫的情緒困擾，請撥打安心專線 1925 或生命線 1995，尋求專業協助。</p>
+  </section>
+
+  <!-- Screen: History -->
+  <section id="screen-history" class="screen stage">
+    <h2>探索紀錄</h2>
+    <p class="sub">只存在這台裝置、這個瀏覽器裡，不會同步到其他裝置，也不會上傳到任何伺服器。</p>
+    <div id="history-list"></div>
+    <div class="row-end">
+      <button class="btn ghost" id="btn-history-back">返回</button>
+      <button class="btn ghost" id="btn-history-clear">清除全部紀錄</button>
+    </div>
   </section>
 
   <!-- Screen 1: Topic -->
@@ -481,7 +508,7 @@ const state = {
 
 /* ===================== DOM helpers ===================== */
 const $ = (id) => document.getElementById(id);
-const screens = ["screen-intro","screen-topic","screen-symbols","screen-colors","screen-prompt"];
+const screens = ["screen-intro","screen-topic","screen-symbols","screen-colors","screen-prompt","screen-history"];
 function showScreen(id){
   screens.forEach(s => $(s).classList.toggle("active", s === id));
   window.scrollTo({top:0});
@@ -651,6 +678,7 @@ function pickColor(name, colorId){
 
 $("btn-back-2").addEventListener("click", () => showScreen("screen-symbols"));
 $("btn-color-next").addEventListener("click", () => {
+  addHistoryEntry();
   showPromptScreen();
 });
 
@@ -660,8 +688,15 @@ function buildFullPrompt(){
     const d = SYMBOLS_RAW[name];
     const colorId = state.colorMap[name];
     const colorInfo = colorId ? COLORS.find(c => c.id === colorId) : null;
-    let line = `${i+1}. ${name}（象徵：${d.noun}／情緒基調：${d.emotion}）`;
-    if (colorInfo) line += `，並上色為「${colorInfo.name}」（${colorInfo.noun}／情緒基調：${colorInfo.emotion}）`;
+
+    // 每次只隨機抽取其中一部分描述、外加隨機挑一句可能連結，
+    // 避免同一個符號每次都輸出完全一樣的固定標籤組合
+    const descriptorPool = [`象徵：${d.noun}`, `特質：${d.adj}`, `情緒基調：${d.emotion}`];
+    const pickedDescriptors = shuffleArray(descriptorPool).slice(0, 2);
+    const pickedState = d.states[Math.floor(Math.random() * d.states.length)];
+
+    let line = `${i+1}. ${name}（${pickedDescriptors.join("／")}；其中一種可能連結：${pickedState}）`;
+    if (colorInfo) line += `，並上色為「${colorInfo.name}」（${colorInfo.noun}）`;
     return line;
   }).join("\n");
 
@@ -672,6 +707,7 @@ ${state.topic}
 
 【我依序選擇的符號（及上色情形）】
 ${orderLines}
+（以上每個符號後面括號裡的描述，只是從多種可能參考角度裡隨機抽取的「其中一種」，不是這個符號的完整或固定定義，也不是唯一正確答案。請不要把它當成標準答案照本宣科，而是把它當成一個引子，結合你自己對榮格原型、符號學更廣的理解，以及我實際說出來的話，做出更貼近我此刻狀態的詮釋——每個人、每一次抽到同樣的符號，感受都可能完全不同。）
 
 【引導規則，請務必全程遵守】
 1. 你的角色是溫柔陪伴的引導者，不是心理治療師，全程不做診斷、不貼標籤、不下確定的結論。
@@ -742,6 +778,111 @@ $("btn-restart").addEventListener("click", () => {
   $("topic-input").value = "";
   $("btn-topic-next").disabled = true;
   showScreen("screen-intro");
+});
+
+/* ===================== 歷史紀錄（localStorage，僅存在此裝置此瀏覽器） ===================== */
+const HISTORY_KEY = "symbolCompanion.history.v1";
+const HISTORY_MAX = 30;
+
+function loadHistory(){
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (err){
+    console.warn("讀取歷史紀錄失敗（可能是無痕模式或瀏覽器限制）：", err);
+    return [];
+  }
+}
+
+function saveHistoryList(list){
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
+    return true;
+  } catch (err){
+    console.warn("寫入歷史紀錄失敗（可能是無痕模式或儲存空間已滿）：", err);
+    return false;
+  }
+}
+
+function addHistoryEntry(){
+  if (state.selected.length === 0) return;
+  const list = loadHistory();
+  list.unshift({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    ts: Date.now(),
+    topic: state.topic,
+    selected: state.selected.slice(),
+    colorMap: Object.assign({}, state.colorMap)
+  });
+  saveHistoryList(list.slice(0, HISTORY_MAX));
+}
+
+function deleteHistoryEntry(id){
+  saveHistoryList(loadHistory().filter(e => e.id !== id));
+  renderHistoryScreen();
+}
+
+function formatHistoryDate(ts){
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function renderHistoryScreen(){
+  const wrap = $("history-list");
+  wrap.innerHTML = "";
+  const list = loadHistory();
+
+  if (list.length === 0){
+    wrap.innerHTML = `<p class="sub" style="text-align:center; padding:36px 0;">還沒有任何紀錄。完成一次符號選擇後，會自動存在這裡（只存在這台裝置）。</p>`;
+    return;
+  }
+
+  list.forEach(entry => {
+    const card = document.createElement("div");
+    card.className = "history-card";
+
+    const chips = entry.selected.map((name, i) => {
+      const colorId = entry.colorMap ? entry.colorMap[name] : null;
+      const colorInfo = colorId ? COLORS.find(c => c.id === colorId) : null;
+      const dot = colorInfo ? `<span class="dot" style="background:${colorInfo.hex}"></span>` : "";
+      return `<div class="seal-chip"><span class="num">${NUMERALS[i] || (i + 1)}</span><span>${name}</span>${dot}</div>`;
+    }).join("");
+
+    card.innerHTML = `
+      <div class="history-date">${formatHistoryDate(entry.ts)}</div>
+      <div class="history-topic">${entry.topic || "（未填寫議題）"}</div>
+      <div class="seal-strip" style="border:none; margin:0; padding:6px 0 0;">${chips}</div>
+      <div class="history-actions">
+        <button class="btn ghost small" data-action="reopen" type="button">重新開啟</button>
+        <button class="btn ghost small" data-action="delete" type="button">刪除</button>
+      </div>
+    `;
+
+    card.querySelector('[data-action="reopen"]').addEventListener("click", () => {
+      state.topic = entry.topic;
+      state.selected = entry.selected.slice();
+      state.colorMap = Object.assign({}, entry.colorMap);
+      showPromptScreen();
+    });
+    card.querySelector('[data-action="delete"]').addEventListener("click", () => {
+      deleteHistoryEntry(entry.id);
+    });
+
+    wrap.appendChild(card);
+  });
+}
+
+$("btn-view-history").addEventListener("click", () => {
+  renderHistoryScreen();
+  showScreen("screen-history");
+});
+$("btn-history-back").addEventListener("click", () => showScreen("screen-intro"));
+$("btn-history-clear").addEventListener("click", () => {
+  if (confirm("確定要清除所有探索紀錄嗎？這個動作無法復原。")){
+    saveHistoryList([]);
+    renderHistoryScreen();
+  }
 });
 </script>
 </body>
