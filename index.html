@@ -1,889 +1,759 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>符號陪伴｜用符號與顏色，安靜地探索自己</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>神秘符號探索</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg: #171A26;
-    --bg-alt: #1F2436;
-    --paper: #EFE8D8;
-    --paper-dim: #E3DBC7;
-    --ink: #241F18;
-    --ink-soft: #6E6455;
-    --text-onbg: #E9E4D6;
-    --text-onbg-dim: #A6A091;
-    --seal: #B23A2E;
-    --seal-dim: rgba(178,58,46,0.16);
-    --jade: #5C7A6B;
-    --gold: #C9A15A;
-    --line-onbg: rgba(233,228,214,0.14);
-    --line-onpaper: rgba(36,31,24,0.14);
-    --radius: 6px;
-    --shadow: 0 12px 32px rgba(0,0,0,0.35);
-  }
-  *{ box-sizing:border-box; }
-  html,body{ height:100%; }
-  body{
-    margin:0;
-    background:
-      radial-gradient(circle at 82% -10%, rgba(201,161,90,0.10), transparent 45%),
-      radial-gradient(circle at 10% 110%, rgba(92,122,107,0.10), transparent 40%),
-      var(--bg);
-    color:var(--text-onbg);
-    font-family:'Noto Sans TC', sans-serif;
-    -webkit-font-smoothing:antialiased;
-    min-height:100vh;
-  }
-  h1,h2,h3,.serif{ font-family:'Noto Serif TC', serif; }
-  button{ font-family:inherit; }
-  ::selection{ background:var(--seal-dim); }
-  :focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+:root{
+  --void:#0a0a0d;
+  --surface:#151519;
+  --surface-2:#1d1d23;
+  --ink:#f4f2ee;
+  --ink-dim:#9a97a0;
+  --ink-faint:#5c5a63;
+  --amber:#ff5a2b;
+  --amber-dim:#c8461f;
+  --jade:#2be08f;
+  --line:rgba(255,255,255,.10);
+  --line-strong:rgba(255,255,255,.20);
+  --serif:'Noto Serif TC',serif;
+  --sans:'Noto Sans TC',sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;height:100%;background:var(--void);color:var(--ink);font-family:var(--sans);overflow:hidden;}
+body{
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 0%, rgba(255,90,43,0.09), transparent 60%),
+    radial-gradient(ellipse 50% 35% at 100% 100%, rgba(43,224,143,0.06), transparent 60%),
+    var(--void);
+}
+#app{position:relative;width:100%;height:100vh;height:100dvh;max-width:520px;margin:0 auto;overflow:hidden;display:flex;flex-direction:column;}
 
-  @media (prefers-reduced-motion: reduce){
-    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
-    .ambient-particles{ display:none; }
-  }
+/* topbar */
+.topbar{position:relative;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:16px 20px 10px;flex:0 0 auto;}
+.backbtn{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.02);color:var(--ink-dim);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:.2s;}
+.backbtn:hover{border-color:var(--line-strong);color:var(--ink);}
+.backbtn.hidden{visibility:hidden;}
+.dots{display:flex;gap:7px;}
+.dots span{width:6px;height:6px;border-radius:50%;background:var(--ink-faint);transition:.3s;}
+.dots span.active{background:var(--amber);width:18px;border-radius:4px;}
+.dots span.done{background:var(--ink-dim);}
+.topbar .spacer{width:34px;}
 
-  .ambient-particles{ position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:0; }
-  .ambient-particles span{
-    position:absolute; bottom:-6%; width:3px; height:3px; border-radius:50%;
-    background:var(--gold); opacity:0; box-shadow:0 0 6px 1px rgba(201,161,90,0.5);
-    animation:drift linear infinite;
-  }
-  @keyframes drift{
-    0%{ transform:translateY(0) translateX(0); opacity:0; }
-    8%{ opacity:0.55; }
-    92%{ opacity:0.4; }
-    100%{ transform:translateY(-112vh) translateX(var(--dx,20px)); opacity:0; }
-  }
-  #app{ position:relative; z-index:1; }
+/* screens */
+main{position:relative;flex:1 1 auto;min-height:0;}
+.screen{
+  position:absolute;inset:0;padding:0 24px 24px;display:flex;flex-direction:column;
+  opacity:0;transform:translateX(24px);pointer-events:none;transition:opacity .45s ease, transform .45s ease;
+  overflow-y:auto;
+}
+.screen.active{opacity:1;transform:translateX(0);pointer-events:auto;}
+.screen.leaving{transform:translateX(-24px);}
 
-  #app{ max-width:760px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; padding:0 20px; }
-  .screen{ display:none; flex:1; flex-direction:column; }
-  .screen.active{ display:flex; animation:screenIn .5s cubic-bezier(.2,.8,.2,1); }
-  @keyframes screenIn{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:translateY(0);} }
+.eyebrow{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--amber);font-weight:500;margin-bottom:10px;}
+h1.title{font-family:var(--serif);font-weight:700;font-size:clamp(30px,8vw,42px);line-height:1.25;margin:0 0 14px;letter-spacing:.02em;}
+p.lead{color:var(--ink-dim);font-size:15px;line-height:1.8;margin:0 0 8px;font-weight:300;}
 
-  /* ---------- Intro ---------- */
-  #screen-intro{ justify-content:center; align-items:center; text-align:center; padding:48px 0; position:relative; }
-  .moon-glow{
-    position:absolute; top:8%; left:50%; transform:translateX(-50%);
-    width:220px; height:220px; border-radius:50%;
-    background: radial-gradient(circle at 35% 30%, rgba(201,161,90,0.35), rgba(201,161,90,0.05) 55%, transparent 70%);
-    filter: blur(2px);
-    animation: moonrise 2.2s ease-out;
-  }
-  @keyframes moonrise{ from{ opacity:0; transform:translateX(-50%) translateY(14px) scale(0.9);} to{ opacity:1; transform:translateX(-50%) translateY(0) scale(1);} }
-  .eyebrow{ letter-spacing:0.32em; font-size:12px; color:var(--gold); margin-bottom:18px; text-transform:uppercase; }
-  #screen-intro h1{ font-size:44px; margin:0 0 14px; font-weight:600; }
-  .lede{ color:var(--text-onbg-dim); font-size:15.5px; line-height:1.9; max-width:480px; margin:0 auto 30px; }
-  .disclaimer{ font-size:12.5px; color:var(--text-onbg-dim); opacity:0.75; max-width:440px; line-height:1.7; margin:26px auto 0; }
-  .history-link{
-    display:block; margin:16px auto 0; background:none; border:none; color:var(--text-onbg-dim);
-    font-size:13px; cursor:pointer; text-decoration:underline; text-underline-offset:3px;
-    transition:color .15s ease;
-  }
-  .history-link:hover{ color:var(--gold); }
+.btn{
+  appearance:none;border:none;cursor:pointer;font-family:var(--sans);font-weight:500;font-size:15px;
+  padding:16px 22px;border-radius:14px;letter-spacing:.02em;transition:.2s transform,.2s box-shadow,.2s opacity,.2s background;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-primary{background:var(--amber);color:#100904;box-shadow:0 8px 24px -8px rgba(255,90,43,.6);}
+.btn-primary:active{transform:scale(.97);}
+.btn-primary:disabled{opacity:.35;box-shadow:none;cursor:not-allowed;}
+.btn-ghost{background:transparent;border:1px solid var(--line-strong);color:var(--ink);}
+.btn-ghost:active{transform:scale(.97);background:rgba(255,255,255,.04);}
+.btn-block{width:100%;}
 
-  .history-card{
-    background:var(--bg-alt); border:1px solid var(--line-onbg); border-radius:8px;
-    padding:16px 18px; margin-bottom:14px;
-  }
-  .history-date{ font-size:11.5px; color:var(--text-onbg-dim); margin-bottom:4px; }
-  .history-topic{ font-family:'Noto Serif TC',serif; font-size:16px; color:var(--text-onbg); margin-bottom:8px; }
-  .history-actions{ display:flex; gap:10px; margin-top:12px; }
-  .btn.small{ padding:7px 14px; font-size:12.5px; }
+/* SCREEN 1 - title */
+#screen-1{justify-content:center;align-items:center;text-align:center;padding-top:0;}
+.hero-mark{width:100%;max-width:280px;height:180px;position:relative;margin:0 auto 30px;}
+.hero-card{position:absolute;top:10px;left:50%;width:108px;height:150px;border-radius:12px;
+  background:linear-gradient(155deg,var(--surface-2),var(--surface));
+  border:1px solid var(--line-strong);
+  box-shadow:0 20px 40px -15px rgba(0,0,0,.7);
+}
+.hero-card svg{width:44%;height:44%;position:absolute;top:28%;left:28%;color:var(--amber);opacity:.9;}
+.hero-card.c1{transform:translateX(-84px) rotate(-16deg);z-index:1;opacity:.55;}
+.hero-card.c2{transform:translateX(-28px) rotate(-6deg);z-index:2;opacity:.8;}
+.hero-card.c3{transform:translateX(-6px) rotate(4deg);z-index:4;}
+.hero-card.c4{transform:translateX(50px) rotate(14deg);z-index:3;opacity:.65;}
+h1.big-title{font-family:var(--serif);font-weight:700;font-size:clamp(34px,10vw,48px);margin:0 0 12px;letter-spacing:.04em;}
+.big-title .accent{color:var(--amber);}
+#screen-1 p.lead{max-width:340px;margin-left:auto;margin-right:auto;}
+#screen-1 .btn-primary{margin-top:30px;padding:17px 40px;}
+.foot-tag{position:absolute;bottom:18px;left:0;right:0;text-align:center;font-size:11px;letter-spacing:.25em;color:var(--ink-faint);text-transform:uppercase;}
 
-  /* ---------- Shared ---------- */
-  .stage{ padding:56px 0 28px; }
-  .stage h2{ font-size:26px; margin:0 0 8px; font-weight:600; }
-  .stage .sub{ color:var(--text-onbg-dim); font-size:14px; margin:0 0 30px; line-height:1.7; }
-  .btn{
-    border:1px solid var(--seal); background:var(--seal); color:#F6EFE3;
-    padding:13px 30px; border-radius:var(--radius); font-size:15px; font-weight:500;
-    cursor:pointer; letter-spacing:0.02em; transition:transform .15s ease, opacity .15s ease, background .15s ease;
-  }
-  .btn:hover:not(:disabled){ transform:translateY(-1px); }
-  .btn:active:not(:disabled){ transform:translateY(0); }
-  .btn:disabled{ opacity:0.35; cursor:not-allowed; }
-  .btn.ghost{ background:transparent; color:var(--text-onbg-dim); border-color:var(--line-onbg); }
-  .btn.ghost:hover{ color:var(--text-onbg); border-color:var(--text-onbg-dim); }
-  .row-end{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:34px; }
+/* SCREEN 2 - issue */
+#screen-2{padding-top:6px;}
+textarea{
+  width:100%;flex:0 0 auto;min-height:150px;margin-top:18px;background:var(--surface);
+  border:1px solid var(--line);border-radius:16px;padding:16px;color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;resize:vertical;outline:none;transition:.2s border-color;
+}
+textarea:focus{border-color:var(--amber-dim);}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.chip{font-size:12.5px;padding:8px 13px;border-radius:100px;background:rgba(255,255,255,.03);border:1px solid var(--line);color:var(--ink-dim);cursor:pointer;transition:.2s;}
+.chip:hover{border-color:var(--amber-dim);color:var(--ink);}
+#screen-2 .nav-row{margin-top:auto;padding-top:22px;}
 
-  textarea.paper-input{
-    width:100%; background:var(--paper); color:var(--ink); border:1px solid var(--line-onpaper);
-    border-radius:var(--radius); padding:18px; font-size:15.5px; line-height:1.8; font-family:'Noto Sans TC', sans-serif;
-    resize:vertical; min-height:130px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
-  }
-  textarea.paper-input::placeholder{ color:var(--ink-soft); }
+/* generic nav row */
+.nav-row{display:flex;gap:12px;}
+.nav-row .btn{flex:1;}
 
-  /* ---------- Symbol grid ---------- */
-  .cat-block{ margin-bottom:26px; }
-.deck-caption{ display:flex; align-items:center; gap:14px; margin-bottom:22px; }
-  .mini-stack{ position:relative; width:44px; height:32px; flex:none; }
-  .mini-stack span{ position:absolute; inset:0; border:1.5px solid var(--line-onbg); border-radius:4px; background:var(--bg-alt); }
-  .mini-stack span:nth-child(1){ transform:rotate(-7deg); }
-  .mini-stack span:nth-child(2){ transform:rotate(3deg); }
-  .mini-stack span:nth-child(3){ transform:rotate(-1deg); background:var(--paper); border-color:var(--line-onpaper); }
-  .reshuffle-btn{
-    margin-left:auto; background:none; border:1px solid var(--line-onbg); color:var(--text-onbg-dim);
-    font-size:12.5px; padding:7px 14px; border-radius:20px; cursor:pointer; white-space:nowrap;
-    transition:color .15s ease, border-color .15s ease;
-  }
-  .reshuffle-btn:hover{ color:var(--gold); border-color:var(--gold); }
+/* SCREEN 3 - draw */
+#screen-3{padding-left:0;padding-right:0;}
+#screen-3 .inner-pad{padding:0 24px;}
+.draw-status{display:flex;align-items:baseline;justify-content:space-between;margin-top:16px;padding:0 24px;}
+.draw-status .count{font-family:var(--serif);font-size:20px;}
+.draw-status .count b{color:var(--amber);}
+.deckwrap{flex:1;display:flex;align-items:center;overflow-x:auto;overflow-y:hidden;padding:30px 40px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;}
+.deckwrap::-webkit-scrollbar{display:none;}
+.deck{display:flex;align-items:center;}
+.card-back{
+  flex:0 0 auto;width:88px;height:126px;margin-left:-46px;border-radius:12px;cursor:pointer;
+  background:linear-gradient(160deg,var(--surface-2) 0%,var(--surface) 100%);
+  border:1px solid var(--line-strong);position:relative;
+  box-shadow:0 12px 24px -12px rgba(0,0,0,.8);
+  transition:transform .25s cubic-bezier(.2,.8,.3,1.3),box-shadow .25s,border-color .25s;
+  display:flex;align-items:center;justify-content:center;
+}
+.deck .card-back:first-child{margin-left:0;}
+.card-back::before{content:'';position:absolute;inset:7px;border:1px solid rgba(255,255,255,.08);border-radius:8px;}
+.card-back svg{width:26px;height:26px;color:var(--ink-faint);transition:.25s color;}
+.card-back.selected{transform:translateY(-22px) scale(1.06);border-color:var(--amber);box-shadow:0 18px 30px -10px rgba(255,90,43,.5);z-index:5;}
+.card-back.selected svg{color:var(--amber);}
+.card-back.disabled{opacity:.35;pointer-events:none;}
+#screen-3 .nav-row{padding:0 24px 4px;}
+.hint{padding:0 24px;color:var(--ink-faint);font-size:12.5px;text-align:center;margin-top:2px;}
 
-  .card-spread{ display:flex; flex-wrap:wrap; gap:14px; justify-content:center; padding:6px 4px 10px; }
-  .card{
-    position:relative; width:82px; height:110px; perspective:700px;
-    opacity:0; transform:translateY(26px) scale(0.75) rotate(0deg);
-    transition:transform .55s cubic-bezier(.2,.85,.25,1), opacity .4s ease;
-    cursor:pointer;
-  }
-  .card.dealt{ opacity:1; transform:translateY(0) scale(1) rotate(var(--rot,0deg)); }
-  .card-inner{
-    position:relative; width:100%; height:100%; transform-style:preserve-3d;
-    transition:transform .6s cubic-bezier(.3,.85,.3,1);
-  }
-  .card.revealed .card-inner{ transform:rotateY(180deg); }
-  .card-face{
-    position:absolute; inset:0; border-radius:8px; backface-visibility:hidden;
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:0 8px 18px rgba(0,0,0,0.32); border:1.5px solid transparent;
-    transition:border-color .15s ease, box-shadow .2s ease;
-  }
-  .card-back{
-    background:
-      repeating-linear-gradient(45deg, rgba(201,161,90,0.08) 0 6px, transparent 6px 12px),
-      var(--bg-alt);
-    border-color:var(--line-onbg);
-  }
-  .card-back svg{ width:22px; height:22px; color:var(--gold); opacity:0.8; }
-  .card-front{ background:var(--paper); transform:rotateY(180deg); }
-  .card-front svg{ width:42px; height:42px; color:var(--ink); overflow:visible; }
-  .card.selected .card-face{ border-color:var(--seal); }
-  .card.selected::after{
-    content:""; position:absolute; inset:-6px; border-radius:12px; border:1.5px solid var(--seal);
-    opacity:0; pointer-events:none; animation:cardRing .5s ease-out;
-  }
-  @keyframes cardRing{ from{ transform:scale(0.92); opacity:0.8; } to{ transform:scale(1.1); opacity:0; } }
-  .card.disabled{ opacity:0.35 !important; cursor:not-allowed; }
-  .card:hover:not(.disabled) .card-face{ box-shadow:0 12px 26px rgba(0,0,0,0.42); }
-  .seal-badge{
-    position:absolute; top:-9px; right:-9px; width:26px; height:26px; border-radius:4px;
-    background:var(--seal); color:#F6EFE3; font-family:'Noto Serif TC',serif; font-size:13px;
-    display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.3);
-    transform:scale(0); animation:stamp .28s cubic-bezier(.2,1.6,.4,1) forwards; z-index:3;
-  }
-  @keyframes stamp{ from{ transform:scale(0) rotate(-14deg); opacity:0;} to{ transform:scale(1) rotate(-8deg); opacity:1;} }
+/* SCREEN 4 - reveal + color */
+#screen-4{padding-top:4px;}
+.reveal-progress{display:flex;gap:6px;margin:14px 0 4px;}
+.reveal-progress span{flex:1;height:3px;border-radius:3px;background:var(--line);}
+.reveal-progress span.on{background:var(--amber);}
+.flipcard{
+  margin-top:14px;background:linear-gradient(160deg,var(--surface-2),var(--surface));
+  border:1px solid var(--line-strong);border-radius:20px;padding:26px 22px 20px;position:relative;overflow:hidden;
+}
+.flipcard::after{content:'';position:absolute;top:-40%;right:-30%;width:70%;height:70%;
+  background:radial-gradient(circle,rgba(255,90,43,.13),transparent 65%);pointer-events:none;}
+.flip-icon{width:60px;height:60px;color:var(--amber);margin-bottom:12px;}
+.flip-name{font-family:var(--serif);font-size:26px;font-weight:700;margin:0 0 10px;}
+.tag-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px;}
+.tag{font-size:11.5px;padding:5px 10px;border-radius:100px;border:1px solid var(--line-strong);color:var(--ink-dim);}
+.qbox{background:rgba(0,0,0,.22);border-radius:12px;padding:14px 15px;margin-bottom:6px;}
+.qbox p{margin:0 0 8px;font-size:13.5px;color:var(--ink-dim);line-height:1.7;}
+.qbox p:last-child{margin-bottom:0;}
+.qbox p::before{content:'◦ ';color:var(--amber);}
+.colorpick{margin-top:18px;}
+.colorpick .label{font-size:12px;color:var(--ink-dim);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;}
+.swatches{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.swatch{width:34px;height:34px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:.2s;position:relative;}
+.swatch.active{border-color:#fff;transform:scale(1.12);}
+.swatch.custom{background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;overflow:hidden;}
+.swatch.custom input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.color-meaning{margin-top:10px;font-size:12.5px;color:var(--ink-faint);min-height:16px;}
+#screen-4 .nav-row{margin-top:20px;padding-bottom:6px;}
+.reveal-nav{display:flex;justify-content:space-between;margin-top:14px;}
+.reveal-nav button{background:none;border:none;color:var(--ink-dim);font-size:13px;cursor:pointer;padding:8px 4px;}
+.reveal-nav button:disabled{opacity:.25;cursor:default;}
 
-  .sticky-bar{
-    position:sticky; bottom:0; background:linear-gradient(to top, var(--bg) 65%, transparent);
-    padding:18px 0 22px; display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:8px;
-  }
-  .count-label{ font-size:13px; color:var(--text-onbg-dim); }
-  .count-label b{ color:var(--gold); font-weight:600; }
+/* SCREEN 5 - fusion */
+#screen-5{align-items:center;text-align:center;padding-top:8px;}
+.fusion-stage{width:100%;max-width:300px;margin:14px auto 8px;position:relative;}
+canvas#fusionCanvas{width:100%;height:auto;border-radius:24px;display:block;box-shadow:0 30px 60px -20px rgba(0,0,0,.8);}
+.fusion-actions{display:flex;gap:12px;margin-top:20px;width:100%;}
+.fusion-actions .btn{flex:1;}
+#screen-5 .nav-row{margin-top:16px;}
 
-  /* ---------- Color screen ---------- */
-  .color-spread{ display:flex; flex-wrap:wrap; gap:24px; justify-content:center; padding:14px 4px 24px; }
-  .paint-card{
-    position:relative; background:var(--paper); border-radius:12px; width:152px;
-    padding:26px 14px 18px; display:flex; flex-direction:column; align-items:center; gap:16px;
-    box-shadow:0 12px 26px rgba(0,0,0,0.34);
-  }
-  .paint-card .num-badge{
-    position:absolute; top:-10px; left:-10px; width:26px; height:26px; border-radius:4px;
-    background:var(--seal); color:#F6EFE3; font-family:'Noto Serif TC',serif; font-size:13px;
-    display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.3); z-index:2;
-  }
-  .icon-paint{ position:relative; width:70px; height:70px; }
-  .icon-base, .icon-color{ position:absolute; inset:0; }
-  .icon-base svg, .icon-color svg{ width:100%; height:100%; overflow:visible; }
-  .icon-base{ color:var(--ink); opacity:0.85; }
-  .icon-color{
-    clip-path: inset(100% 0 0 0);
-    transition: clip-path .6s cubic-bezier(.4,0,.2,1), color .3s ease;
-  }
-  .icon-color.filled{ clip-path: inset(0% 0 0 0); }
-  .paint-swatches{ display:flex; flex-wrap:wrap; gap:7px; justify-content:center; }
-  .paint-swatch{
-    width:22px; height:22px; border-radius:50%; cursor:pointer; border:2px solid transparent;
-    position:relative; transition:transform .12s ease, border-color .12s ease;
-  }
-  .paint-swatch:hover{ transform:scale(1.15); }
-  .paint-swatch.active{ border-color:var(--gold); box-shadow:0 0 0 2px rgba(201,161,90,0.2); }
-  .paint-swatch.active::after{
-    content:""; position:absolute; inset:-5px; border-radius:50%; border:1.5px solid var(--gold);
-    opacity:0; pointer-events:none; animation:ringPulse .5s ease-out;
-  }
-  @keyframes ringPulse{ from{ transform:scale(0.6); opacity:0.8; } to{ transform:scale(1.35); opacity:0; } }
-  .paint-swatch.clear{
-    background:transparent; border:1.5px dashed var(--line-onpaper); display:flex;
-    align-items:center; justify-content:center; font-size:9px; color:var(--ink-soft);
-  }
-  /* ---------- Prompt handoff ---------- */
-  #screen-prompt .seal-strip{
-    display:flex; align-items:center; gap:8px; overflow-x:auto; padding:2px 4px 16px; margin-bottom:6px;
-  }
-  .seal-chip{
-    flex:none; display:flex; align-items:center; gap:6px; background:var(--bg-alt);
-    border:1px solid var(--line-onbg); border-radius:20px; padding:6px 12px 6px 6px; font-size:12.5px; color:var(--text-onbg-dim);
-  }
-  .seal-chip .num{ width:18px; height:18px; border-radius:4px; background:var(--seal); color:#F6EFE3; font-family:'Noto Serif TC',serif; font-size:10.5px; display:flex; align-items:center; justify-content:center; }
-  .seal-chip .dot{ width:9px; height:9px; border-radius:50%; }
-  .topic-line{ font-size:12.5px; color:var(--text-onbg-dim); padding:2px 4px 18px; line-height:1.7; }
-  .topic-line b{ color:var(--text-onbg); font-weight:500; }
+/* SCREEN 6 - prompt */
+#screen-6{justify-content:center;text-align:center;}
+.lock-icon{width:52px;height:52px;margin:0 auto 18px;color:var(--jade);}
+.copybtn{margin-top:26px;background:var(--jade);color:#062015;box-shadow:0 8px 24px -8px rgba(43,224,143,.55);}
+.ai-badges{display:flex;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap;}
+.ai-badges span{font-size:12px;padding:7px 13px;border-radius:100px;border:1px solid var(--line-strong);color:var(--ink-dim);}
+.toast{
+  position:absolute;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+  background:var(--jade);color:#062015;padding:12px 20px;border-radius:100px;font-size:13.5px;font-weight:500;
+  box-shadow:0 12px 30px -10px rgba(43,224,143,.6);opacity:0;pointer-events:none;transition:.3s;z-index:50;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.restart-link{margin-top:22px;background:none;border:none;color:var(--ink-faint);font-size:12.5px;text-decoration:underline;cursor:pointer;}
 
-  .prompt-box{ position:relative; margin-bottom:18px; }
-  .prompt-box textarea{
-    width:100%; min-height:280px; background:var(--paper); color:var(--ink); border:1px solid var(--line-onpaper);
-    border-radius:var(--radius); padding:18px; font-size:13.5px; line-height:1.8; font-family:'Noto Sans TC', sans-serif;
-    resize:vertical; box-shadow:inset 0 1px 3px rgba(0,0,0,0.06);
-  }
-  .copy-btn{
-    position:absolute; top:12px; right:12px; background:var(--seal); color:#F6EFE3; border:none;
-    padding:9px 16px; border-radius:6px; font-size:13px; cursor:pointer; transition:transform .12s ease, background .2s ease;
-  }
-  .copy-btn:hover{ transform:translateY(-1px); }
-  .copy-btn.copied{ background:var(--jade); }
-
-  .launch-row{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:8px; }
-  .launch-link{
-    color:var(--gold); font-size:13.5px; text-decoration:none; border:1px solid var(--line-onbg);
-    padding:8px 16px; border-radius:20px; transition:border-color .15s ease, color .15s ease;
-  }
-  .launch-link:hover{ border-color:var(--gold); }
-
-  .footer-note{ font-size:11.5px; color:var(--text-onbg-dim); opacity:0.75; text-align:center; padding:18px 0 14px; line-height:1.6; }
-
-  @media (max-width:520px){
-    #screen-intro h1{ font-size:34px; }
-    .stage h2{ font-size:22px; }
-    .sym-grid{ grid-template-columns:repeat(auto-fill, minmax(84px,1fr)); }
-  }
+@media (max-width:360px){
+  .screen{padding-left:18px;padding-right:18px;}
+  .draw-status,.deckwrap{padding-left:18px;padding-right:18px;}
+}
 </style>
 </head>
 <body>
-<div class="ambient-particles" aria-hidden="true" id="ambient-particles"></div>
 <div id="app">
+  <div class="topbar">
+    <div class="backbtn" id="backBtn">←</div>
+    <div class="dots" id="dots"></div>
+    <div class="spacer"></div>
+  </div>
+  <main>
 
-  <!-- Screen 0: Intro -->
-  <section id="screen-intro" class="screen active">
-    <div class="moon-glow" aria-hidden="true"></div>
-    <div class="eyebrow">符 號 陪 伴</div>
-    <h1>先別急著找答案，<br/>讓符號陪你看一看現在的自己。</h1>
-    <p class="lede">選幾張有感覺的符號，替其中一些上色，接著我們會一起，用溫柔的節奏，把模糊的感受慢慢說清楚。</p>
-    <button class="btn" id="btn-start">開始探索</button>
-    <button class="history-link" id="btn-view-history" type="button">📖 查看過去的探索紀錄</button>
-    <p class="disclaimer">本工具融合榮格原型理論、繪畫心理學與色彩心理學的參考語言，用於自我覺察與陪伴引導，並非心理治療或醫療診斷。若你正經歷急迫的情緒困擾，請撥打安心專線 1925 或生命線 1995，尋求專業協助。</p>
-  </section>
+    <!-- SCREEN 1 -->
+    <section class="screen" id="screen-1">
+      <div class="hero-mark" id="heroMark"></div>
+      <div class="eyebrow">Jungian Symbol Deck</div>
+      <h1 class="big-title">神秘符號<span class="accent">探索</span></h1>
+      <p class="lead">以榮格的原型與符號為引，透過盲抽卡牌與直覺選色，映照出你尚未看清的內在景象——再交給 AI 陪你一起探問下去。</p>
+      <button class="btn btn-primary" id="startBtn">開始探索</button>
+      <div class="foot-tag">ARCHETYPE · INTUITION · REFLECTION</div>
+    </section>
 
-  <!-- Screen: History -->
-  <section id="screen-history" class="screen stage">
-    <h2>探索紀錄</h2>
-    <p class="sub">只存在這台裝置、這個瀏覽器裡，不會同步到其他裝置，也不會上傳到任何伺服器。</p>
-    <div id="history-list"></div>
-    <div class="row-end">
-      <button class="btn ghost" id="btn-history-back">返回</button>
-      <button class="btn ghost" id="btn-history-clear">清除全部紀錄</button>
-    </div>
-  </section>
+    <!-- SCREEN 2 -->
+    <section class="screen" id="screen-2">
+      <div class="eyebrow">Step 01</div>
+      <h1 class="title">此刻，<br>你想探索什麼？</h1>
+      <p class="lead">寫下心裡盤旋的議題、卡住的感覺，或還說不清楚的困惑。不用完整，寫出當下浮現的就好。</p>
+      <textarea id="issueInput" placeholder="例如：最近在一段關係裡，總覺得自己在等待對方先靠近⋯⋯"></textarea>
+      <div class="chip-row" id="chipRow"></div>
+      <div class="nav-row"><button class="btn btn-primary btn-block" id="toStep3Btn" disabled>進入抽牌</button></div>
+    </section>
 
-  <!-- Screen 1: Topic -->
-  <section id="screen-topic" class="screen stage">
-    <h2>此刻，你想探索的是什麼？</h2>
-    <p class="sub">不用寫得很完整，一兩句話也可以。例如：「最近在感情裡總是不安，不確定要不要放手」。</p>
-    <textarea class="paper-input" id="topic-input" placeholder="我想探索的議題是……" maxlength="300"></textarea>
-    <div class="row-end">
-      <button class="btn ghost" id="btn-back-0">返回</button>
-      <button class="btn" id="btn-topic-next" disabled>下一步：選符號</button>
-    </div>
-  </section>
-
-  <!-- Screen 2: Symbols -->
-  <section id="screen-symbols" class="screen stage">
-    <h2>抽出 3–4 張此刻有感覺的卡</h2>
-    <div class="deck-caption">
-      <div class="mini-stack"><span></span><span></span><span></span></div>
-      <p class="sub" style="margin:0;">不用想符號代表什麼，牌面只有圖案——跟著直覺點選就好，<b style="color:var(--gold)">順序</b>之後也會是線索。</p>
-      <button class="reshuffle-btn" id="btn-reshuffle" type="button">🔀 重新洗牌</button>
-    </div>
-    <div id="sym-grid-container"></div>
-    <div class="sticky-bar">
-      <span class="count-label">已選 <b id="sym-count">0</b> / 3–4</span>
-      <div style="display:flex; gap:10px;">
-        <button class="btn ghost" id="btn-back-1">返回</button>
-        <button class="btn" id="btn-sym-next" disabled>下一步：上色</button>
+    <!-- SCREEN 3 -->
+    <section class="screen" id="screen-3">
+      <div class="inner-pad">
+        <div class="eyebrow">Step 02</div>
+        <h1 class="title">盲抽符號卡</h1>
+        <p class="lead">憑直覺，從牌堆中選出 3～4 張——先別急著翻開它。</p>
       </div>
-    </div>
-  </section>
+      <div class="draw-status"><span class="hint" style="padding:0;margin:0;">左右滑動查看整副牌</span><span class="count">已選 <b id="selCount">0</b>/4</span></div>
+      <div class="deckwrap"><div class="deck" id="deck"></div></div>
+      <p class="hint">至少選 3 張，最多 4 張</p>
+      <div class="nav-row"><button class="btn btn-primary btn-block" id="toStep4Btn" disabled>翻開卡牌</button></div>
+    </section>
 
-  <!-- Screen 3: Colors -->
-  <section id="screen-colors" class="screen stage">
-    <h2>要不要為某些符號上色？</h2>
-    <p class="sub">點下顏色，線條會被立刻染上那個顏色——不是必填，只挑真的有感覺的符號上色就好，其餘可以留白。</p>
-    <div id="color-rows"></div>
-    <div class="row-end">
-      <button class="btn ghost" id="btn-back-2">返回</button>
-      <button class="btn" id="btn-color-next">產生我的提示詞</button>
-    </div>
-  </section>
+    <!-- SCREEN 4 -->
+    <section class="screen" id="screen-4">
+      <div class="eyebrow">Step 03</div>
+      <h1 class="title">符號揭曉・直覺選色</h1>
+      <div class="reveal-progress" id="revealProgress"></div>
+      <div class="flipcard" id="flipcard"></div>
+      <div class="reveal-nav">
+        <button id="prevCardBtn">← 上一張</button>
+        <button id="nextCardBtn">下一張 →</button>
+      </div>
+      <div class="nav-row"><button class="btn btn-primary btn-block" id="toStep5Btn" disabled>完成選色・融合符號</button></div>
+    </section>
 
-  <!-- Screen 4: Prompt handoff -->
-  <section id="screen-prompt" class="screen stage">
-    <h2>你的提示詞準備好了</h2>
-    <p class="sub">複製下面這段文字，貼到 ChatGPT、Gemini 或 Claude 的對話框裡當作第一句話，就能開始一段溫柔的陪伴對話——接下來的多輪對話會在那個平台上繼續進行。</p>
+    <!-- SCREEN 5 -->
+    <section class="screen" id="screen-5">
+      <div class="eyebrow">Step 04</div>
+      <h1 class="title">你的專屬符號卡</h1>
+      <p class="lead">將你選中的符號與顏色疊合而成，僅屬於此刻的你。</p>
+      <div class="fusion-stage"><canvas id="fusionCanvas" width="600" height="840"></canvas></div>
+      <div class="fusion-actions">
+        <button class="btn btn-ghost" id="downloadBtn">下載圖片</button>
+        <button class="btn btn-ghost" id="shareBtn">分享</button>
+      </div>
+      <div class="nav-row"><button class="btn btn-primary btn-block" id="toStep6Btn">取得探索提示詞</button></div>
+    </section>
 
-    <div class="seal-strip" id="seal-strip"></div>
-    <div class="topic-line">你想探索的議題：<b id="topic-echo"></b></div>
+    <!-- SCREEN 6 -->
+    <section class="screen" id="screen-6">
+      <svg class="lock-icon" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M28 45 L28 32 A22 22 0 1 1 72 32 L72 45"/><path d="M22 45 L78 45 L78 88 L22 88 Z"/><path d="M50 62 L50 74"/></svg>
+      <h1 class="title">專屬探索提示詞<br>已為你準備好</h1>
+      <p class="lead">內容已根據你的議題與符號量身生成，不會顯示在畫面上。複製後貼到 ChatGPT、Gemini 或 Claude，開始一場深度對話。</p>
+      <button class="btn btn-primary copybtn" id="copyBtn">複製提示詞</button>
+      <div class="ai-badges"><span>ChatGPT</span><span>Gemini</span><span>Claude</span></div>
+      <button class="restart-link" id="restartBtn">重新開始一次探索</button>
+    </section>
 
-    <div class="prompt-box">
-      <textarea id="prompt-output" readonly></textarea>
-      <button class="copy-btn" id="btn-copy-prompt">複製提示詞</button>
-    </div>
-
-    <div class="launch-row">
-      <a class="launch-link" href="https://chatgpt.com" target="_blank" rel="noopener">開啟 ChatGPT ↗</a>
-      <a class="launch-link" href="https://gemini.google.com" target="_blank" rel="noopener">開啟 Gemini ↗</a>
-      <a class="launch-link" href="https://claude.ai" target="_blank" rel="noopener">開啟 Claude ↗</a>
-    </div>
-
-    <div class="row-end">
-      <button class="btn ghost" id="btn-back-3">返回重新上色</button>
-      <button class="btn ghost" id="btn-restart">重新開始一輪新的探索</button>
-    </div>
-    <p class="footer-note">這段提示詞由你的選擇自動生成，僅作自我探索陪伴之用，非心理治療或診斷。如有急迫情緒困擾，請撥打安心專線 1925。</p>
-  </section>
-
+  </main>
+  <div class="toast" id="toast"></div>
 </div>
 
 <script>
-/* ===================== 資料：符號圖鑑 ===================== */
-const SYMBOL_CATEGORIES = [
-  { title:"自然與生命", keys:["水滴","月亮","太陽","花","樹","火焰","枯枝","根","蛋","鳥","蝴蝶","魚"] },
-  { title:"空間與場所", keys:["門","迷宮","房子","橋","十字路口","船"] },
-  { title:"心理歷程符號", keys:["螺旋","鑰匙","鏡子","螺旋線"] },
-  { title:"線條與形狀", keys:["波浪線","破碎形狀","鎖鏈","鋸齒線","直線","方","圓","斷裂線","細線","開放弧線","三角","向上延伸","塊狀色面","密集交錯線","環繞包覆","向下墜落"] }
+/* ================= DATA ================= */
+const SYMBOLS = [
+{key:'drop',name:'水滴',noun:'情感・流動',adj:'清澈・脆弱',emo:'悲傷・感動',type:'fill',
+ q:['這滴水是要流出去，還是被留住？','如果這滴水有溫度，會是冷還是熱？'],
+ d:"M50 12 C66 34 74 52 74 66 A24 24 0 1 1 26 66 C26 52 34 34 50 12 Z"},
+{key:'moon',name:'月亮',noun:'內省・柔和',adj:'柔和・神秘',emo:'平靜・孤獨',type:'fill',
+ q:['這是滿的，還是正在缺一角？','如果現在很安靜，你想說話，還是想繼續安靜？'],
+ d:"M62 15 A35 35 0 1 0 62 85 A27 27 0 1 1 62 15 Z"},
+{key:'sun',name:'太陽',noun:'希望・活力',adj:'溫暖・明亮',emo:'喜悅・期待',type:'stroke',
+ q:['這份光，你想被曬到，還是想找地方躲一下？','如果這份溫暖有聲音，會是什麼聲音？'],
+ d:"M50 30 A20 20 0 1 1 49.9 30 Z M50 4 L50 15 M50 85 L50 96 M4 50 L15 50 M85 50 L96 50 M16 16 L24 24 M76 76 L84 84 M16 84 L24 76 M76 24 L84 16"},
+{key:'flower',name:'花',noun:'綻放・脆弱',adj:'嬌嫩・絢爛',emo:'喜悅・珍惜',type:'fill',
+ q:['這朵花，是剛開，還是快謝了？','有沒有人看見它開花？'],
+ d:"M59 50 A9 9 0 1 1 41 50 A9 9 0 1 1 59 50 Z M59 29 A9 9 0 1 1 41 29 A9 9 0 1 1 59 29 Z M76 40 A9 9 0 1 1 58 40 A9 9 0 1 1 76 40 Z M70 61 A9 9 0 1 1 52 61 A9 9 0 1 1 70 61 Z M48 61 A9 9 0 1 1 30 61 A9 9 0 1 1 48 61 Z M42 40 A9 9 0 1 1 24 40 A9 9 0 1 1 42 40 Z"},
+{key:'tree',name:'樹',noun:'成長・根基',adj:'穩固・挺立',emo:'安穩・踏實',type:'stroke',
+ q:['這棵樹，站在這裡多久了？','如果它會說話，現在最想說什麼？'],
+ d:"M50 92 L50 55 M50 42 A20 20 0 1 1 49.9 42 Z M50 62 L36 50 M50 58 L64 48"},
+{key:'flame',name:'火焰',noun:'熱情・爆發',adj:'灼熱・猛烈',emo:'憤怒・興奮',type:'fill',
+ q:['這把火，是想燒掉什麼，還是想溫暖什麼？','如果讓它燒久一點，會發生什麼？'],
+ d:"M50 8 C64 26 58 40 66 50 C73 59 70 74 58 84 C62 74 54 71 51 78 C47 85 33 80 32 65 C31 54 40 46 38 36 C42 42 46 40 44 30 C46 21 48 15 50 8 Z"},
+{key:'door',name:'門',noun:'抉擇・界線',adj:'堅定・神秘',emo:'期待・焦慮',type:'stroke',
+ q:['這扇門，現在是開著，還是關著？','如果打開它，你準備好了嗎？'],
+ d:"M30 15 L70 15 L70 92 L30 92 Z M30 92 L70 92 M60 55 A3 3 0 1 1 59.9 55"},
+{key:'deadbranch',name:'枯枝',noun:'停滯・耗損',adj:'乾枯・脆弱',emo:'無力・悲傷',type:'stroke',
+ q:['這根枝，是斷了，還是只是暫時安靜？','如果給它一點水，它會回來嗎？'],
+ d:"M14 82 L34 60 L28 44 L48 40 L40 21 L60 13 M34 60 L50 54 M40 21 L54 27"},
+{key:'root',name:'根',noun:'歸屬・連結',adj:'深植・穩定',emo:'安全感・依附',type:'stroke',
+ q:['這些根，連著誰，或連著哪裡？','把它拔起來，會痛，還是會鬆一口氣？'],
+ d:"M50 12 L50 40 M50 40 L30 70 M50 40 L50 92 M50 40 L70 68 M30 70 L18 90 M70 68 L82 88"},
+{key:'maze',name:'迷宮',noun:'困惑・糾結',adj:'複雜・曲折',emo:'焦慮・迷惘',type:'stroke',
+ q:['在裡面的時候，你比較想找出口，還是想先看看四周？','如果暫時不知道路，會怎麼樣？'],
+ d:"M14 14 L86 14 L86 86 L14 86 L14 30 L70 30 L70 70 L30 70 L30 46 L56 46"},
+{key:'house',name:'房子',noun:'安全・自我',adj:'溫暖・堅固',emo:'安心・歸屬感',type:'stroke',
+ q:['這間房子，裡面住著誰？','如果只能留一個房間，你會留哪一間？'],
+ d:"M18 55 L50 18 L82 55 L82 92 L18 92 Z M42 92 L42 64 L58 64 L58 92"},
+{key:'bridge',name:'橋',noun:'過渡・連結',adj:'延伸・連貫',emo:'期待・不安',type:'stroke',
+ q:['橋的兩邊，分別是什麼？','走到一半回頭看，你會看到什麼？'],
+ d:"M8 68 Q50 26 92 68 M24 68 L24 90 M76 68 L76 90 M14 68 L86 68"},
+{key:'butterfly',name:'蝴蝶',noun:'蛻變・轉化',adj:'輕盈・絢麗',emo:'期待・喜悅',type:'fill',
+ q:['牠現在是蛹，還是已經是蝴蝶了？','變成現在這樣，牠經歷了什麼？'],
+ d:"M50 50 C28 18 4 22 8 45 C11 62 34 57 50 50 Z M50 50 C33 66 12 70 13 83 C22 92 41 76 50 50 Z M50 50 C72 18 96 22 92 45 C89 62 66 57 50 50 Z M50 50 C67 66 88 70 87 83 C78 92 59 76 50 50 Z M47 27 L53 27 L53 78 L47 78 Z"},
+{key:'fish',name:'魚',noun:'流動・直覺',adj:'滑順・深邃',emo:'平靜・敏感',type:'fill',
+ q:['這條魚，在水面下多深的地方？','水是清澈的，還是混濁的？'],
+ d:"M12 50 C24 28 56 24 74 40 C83 30 92 30 92 30 C87 40 87 44 92 50 C87 56 87 60 92 70 C92 70 83 70 74 60 C56 76 24 72 12 50 Z"},
+{key:'bird',name:'鳥',noun:'自由・嚮往',adj:'自在・靈巧',emo:'渴望・輕鬆',type:'fill',
+ q:['這隻鳥，正要飛走，還是剛剛落下？','如果牠不用飛，牠還會是這隻鳥嗎？'],
+ d:"M8 56 C24 44 36 50 44 44 C48 32 58 18 74 16 C68 27 68 35 74 38 C85 34 94 38 96 46 C84 46 76 51 68 49 C59 57 44 62 33 59 C38 67 33 73 22 71 C28 64 26 59 17 59 C13 59 10 58 8 56 Z"},
+{key:'crossroad',name:'十字路口',noun:'抉擇・猶疑',adj:'岔開・不確定',emo:'焦慮・猶豫',type:'stroke',
+ q:['有幾條路在你面前？','如果現在都不選，會發生什麼？'],
+ d:"M50 8 L50 92 M8 50 L92 50 M22 22 L78 78 M78 22 L22 78"},
+{key:'spiral',name:'螺旋',noun:'循環・深化',adj:'迴旋・向內',emo:'專注・平靜',type:'stroke',
+ q:['如果沿著這條線走到中心，你會看到什麼？','這是正往內收，還是正要往外展開？'],
+ d:"M50 50 a5 5 0 1 1 8 3 a12 12 0 1 1 -14 -8 a20 20 0 1 1 22 15 a29 29 0 1 1 -32 -23"},
+{key:'egg',name:'蛋',noun:'潛能・未知',adj:'完整・脆弱',emo:'期待・緊張',type:'fill',
+ q:['殼裡面是什麼？','現在是該保護它，還是該讓它破殼？'],
+ d:"M50 10 C66 10 77 34 77 55 C77 77 65 92 50 92 C35 92 23 77 23 55 C23 34 34 10 50 10 Z"},
+{key:'key',name:'鑰匙',noun:'解答・掌控',adj:'精準・隱密',emo:'期待・掌控感',type:'stroke',
+ q:['這把鑰匙，是要打開什麼？','找到它之前，你找了多久？'],
+ d:"M35 35 A15 15 0 1 1 34.9 35 Z M46 46 L86 86 M73 73 L81 65 M79 79 L87 71"},
+{key:'wave',name:'波浪線',noun:'起伏・不穩',adj:'搖擺・連綿',emo:'不安・焦躁',type:'stroke',
+ q:['現在是浪頭，還是浪谷？','這個起伏，是誰造成的？'],
+ d:"M6 50 Q22 24 38 50 T70 50 T102 50"},
+{key:'broken',name:'破碎形狀',noun:'裂解・碎片',adj:'破裂・尖銳',emo:'痛苦・混亂',type:'stroke',
+ q:['這些碎片，原本是一個什麼樣的形狀？','有沒有哪一片，你還想留著？'],
+ d:"M30 20 L50 14 L44 40 L70 34 L59 60 L82 66 L54 87 L49 60 L23 71 L34 44 Z M50 60 L44 40"},
+{key:'chain',name:'鎖鏈',noun:'束縛・牽絆',adj:'沉重・交纏',emo:'壓迫感・無力',type:'stroke',
+ q:['這條鏈子，鎖住的是什麼？','如果鬆開一節，會先鬆開哪一節？'],
+ d:"M22 38 A13 9 32 1 1 21.9 38 Z M44 50 A13 9 32 1 1 43.9 50 Z M66 62 A13 9 32 1 1 65.9 62 Z"},
+{key:'mirror',name:'鏡子',noun:'覺察・映照',adj:'清晰・真實',emo:'不安・接納',type:'stroke',
+ q:['鏡子裡的自己，現在是什麼表情？','有沒有哪個角度，你不太想看？'],
+ d:"M50 14 A22 28 0 1 1 49.9 14 Z M50 70 L50 90 M38 90 L62 90 M34 28 L66 56"},
+{key:'boat',name:'船',noun:'旅程・漂流',adj:'搖晃・孤獨',emo:'期待・不安',type:'stroke',
+ q:['這艘船，現在往哪裡去？','船上除了你，還有誰？'],
+ d:"M14 66 Q50 86 86 66 L74 72 Q50 79 26 72 Z M50 66 L50 18 M50 20 L74 38 L50 47"},
+{key:'spiralline',name:'螺旋線',noun:'重複・迴圈',adj:'迴繞・綿延',emo:'困惑・煩躁',type:'stroke',
+ q:['這是第幾次繞回同樣的地方？','每一圈，有沒有哪裡不太一樣？'],
+ d:"M52 50 a3 3 0 1 1 5 2 a8 8 0 1 1 -10 -6 a14 14 0 1 1 16 10 a20 20 0 1 1 -22 -15 a27 27 0 1 1 29 21"},
+{key:'zigzag',name:'鋸齒線',noun:'緊張・衝突',adj:'尖銳・突兀',emo:'焦慮・憤怒',type:'stroke',
+ q:['這些尖角，是撞出來的，還是自己長出來的？','如果磨平一點，感覺會不一樣嗎？'],
+ d:"M8 60 L24 28 L40 60 L56 28 L72 60 L88 28"},
+{key:'straightline',name:'直線',noun:'穩定・目標',adj:'筆直・堅定',emo:'篤定・安心',type:'stroke',
+ q:['這條線，是很篤定地畫出來的，還是想了很久？','如果讓它轉個彎，會發生什麼？'],
+ d:"M14 72 L86 28 M80 22 L86 28 L80 34 M20 66 L14 72 L20 78"},
+{key:'square',name:'方',noun:'界線・秩序',adj:'端正・穩固',emo:'安全感・踏實',type:'stroke',
+ q:['這個框，是誰畫的？','你站在裡面，還是外面？'],
+ d:"M20 20 L80 20 L80 80 L20 80 Z"},
+{key:'circle',name:'圓',noun:'完整・包容',adj:'圓潤・和諧',emo:'滿足・安全感',type:'stroke',
+ q:['這個圓，裡面裝著什麼？','它現在是滿的，還是留了一點空間？'],
+ d:"M50 15 A35 35 0 1 1 49.9 15 Z"},
+{key:'brokenline',name:'斷裂線',noun:'中斷・裂痕',adj:'破碎・突然',emo:'驚訝・失落',type:'stroke',
+ q:['斷掉的地方，發生了什麼？','兩端，還記得彼此嗎？'],
+ d:"M8 50 L40 50 M60 50 L92 50 M37 41 L46 59 M54 41 L63 59"},
+{key:'thinline',name:'細線',noun:'脆弱・謹慎',adj:'纖細・易斷',emo:'不安・敏感',type:'thin',
+ q:['這條線，禁得起用力嗎？','如果加粗一點，感覺會不一樣嗎？'],
+ d:"M8 50 L92 50"},
+{key:'openarc',name:'開放弧線',noun:'延展・未完成',adj:'柔和・開放',emo:'期待・不確定感',type:'stroke',
+ q:['這條線，還會繼續畫下去嗎？','缺的那一段，是故意留白，還是還沒畫到？'],
+ d:"M18 64 A34 34 0 1 1 82 64"},
+{key:'triangle',name:'三角',noun:'張力・方向',adj:'尖銳・聚焦',emo:'緊張・企圖心',type:'stroke',
+ q:['這股張力，指向哪裡？','如果只能選一個角站，你會站哪一個？'],
+ d:"M50 13 L87 82 L13 82 Z"},
+{key:'upward',name:'向上延伸',noun:'渴望・成長',adj:'挺拔・積極',emo:'希望・振奮',type:'stroke',
+ q:['這股往上的力量，是誰給的？','頂端，是終點，還是只是暫停？'],
+ d:"M50 92 L50 12 M34 32 L50 12 L66 32 M28 68 L44 68 M22 52 L38 52"},
+{key:'blockshape',name:'塊狀色面',noun:'沉重・穩固',adj:'厚重・密實',emo:'沉悶・麻木',type:'fill',
+ q:['這一塊，底下藏著什麼？','如果把它打開一點縫，你會想看嗎？'],
+ d:"M14 24 L86 24 L86 80 L14 80 Z"},
+{key:'crosshatch',name:'密集交錯線',noun:'混亂・壓力',adj:'雜亂・緊繃',emo:'焦慮・煩躁',type:'stroke',
+ q:['這些線，哪一條是最先畫上去的？','如果拿掉幾條，會鬆一點嗎？'],
+ d:"M14 18 L86 82 M14 34 L86 98 M14 2 L86 66 M86 18 L14 82 M86 34 L14 98 M86 2 L14 66"}
 ];
 
-const SYMBOLS_RAW = {
-  "水滴":{noun:"情感・流動", adj:"清澈・脆弱", emotion:"悲傷・感動", states:["情緒宣洩","壓抑情感浮現"]},
-  "月亮":{noun:"內省・柔和", adj:"柔和・神秘", emotion:"平靜・孤獨", states:["向內探索","情緒沉澱"]},
-  "太陽":{noun:"希望・活力", adj:"溫暖・明亮", emotion:"喜悅・期待", states:["自信心提升","生命力湧現"]},
-  "花":{noun:"綻放・脆弱", adj:"嬌嫩・絢爛", emotion:"喜悅・珍惜", states:["自我價值展現","被看見的渴望"]},
-  "樹":{noun:"成長・根基", adj:"穩固・挺立", emotion:"安穩・踏實", states:["自我認同穩定","歸屬感建立"]},
-  "火焰":{noun:"熱情・爆發", adj:"灼熱・猛烈", emotion:"憤怒・興奮", states:["情緒爆發","內在衝突"]},
-  "門":{noun:"抉擇・界線", adj:"堅定・神秘", emotion:"期待・焦慮", states:["面臨抉擇","界線設立"]},
-  "枯枝":{noun:"停滯・耗損", adj:"乾枯・脆弱", emotion:"無力・悲傷", states:["能量枯竭","動機喪失"]},
-  "根":{noun:"歸屬・連結", adj:"深植・穩定", emotion:"安全感・依附", states:["原生家庭議題","歸屬感需求"]},
-  "迷宮":{noun:"困惑・糾結", adj:"複雜・曲折", emotion:"焦慮・迷惘", states:["決策困難","內在衝突"]},
-  "房子":{noun:"安全・自我", adj:"溫暖・堅固", emotion:"安心・歸屬感", states:["自我概念","安全感需求"]},
-  "橋":{noun:"過渡・連結", adj:"延伸・連貫", emotion:"期待・不安", states:["過渡期焦慮","面對改變的勇氣"]},
-  "蝴蝶":{noun:"蛻變・轉化", adj:"輕盈・絢麗", emotion:"期待・喜悅", states:["身份轉變中","對改變的期待與恐懼並存"]},
-  "魚":{noun:"潛意識・流動", adj:"滑順・深邃", emotion:"平靜・壓抑", states:["潛意識浮現","難以言說的感受"]},
-  "鳥":{noun:"自由・嚮往", adj:"自在・靈巧", emotion:"渴望・輕鬆", states:["渴望自由","對未來的憧憬"]},
-  "十字路口":{noun:"抉擇・猶疑", adj:"岔開・不確定", emotion:"焦慮・猶豫", states:["重大決策壓力","選擇困難"]},
-  "螺旋":{noun:"循環・內化", adj:"迴旋・向內", emotion:"困惑・沉思", states:["反覆思考的迴圈","內在探索歷程"]},
-  "蛋":{noun:"潛能・未知", adj:"完整・脆弱", emotion:"期待・緊張", states:["潛力未被開發","對未知的期待與焦慮"]},
-  "鑰匙":{noun:"解答・掌控", adj:"精準・隱密", emotion:"期待・掌控感", states:["尋找解決方案","掌控感的需求"]},
-  "波浪線":{noun:"起伏・不穩", adj:"搖擺・連綿", emotion:"不安・焦躁", states:["情緒不穩定","內在張力"]},
-  "破碎形狀":{noun:"裂解・創傷", adj:"破裂・尖銳", emotion:"痛苦・憤怒", states:["創傷經驗","自我認同破碎"]},
-  "鎖鏈":{noun:"束縛・牽絆", adj:"沉重・交纏", emotion:"壓迫感・無力", states:["被限制的無力感","關係中的束縛"]},
-  "鏡子":{noun:"覺察・映照", adj:"清晰・真實", emotion:"不安・接納", states:["自我覺察提升","面對真實自我的掙扎"]},
-  "船":{noun:"旅程・漂流", adj:"搖晃・孤獨", emotion:"期待・不安", states:["人生方向感的追尋","獨自面對挑戰"]},
-  "螺旋線":{noun:"循環・內省", adj:"迴繞・綿延", emotion:"沉思・困惑", states:["反覆思索的迴圈","自我內化歷程"]},
-  "鋸齒線":{noun:"緊張・衝突", adj:"尖銳・突兀", emotion:"焦慮・憤怒", states:["內在衝突劇烈","壓力反應"]},
-  "直線":{noun:"穩定・目標", adj:"筆直・堅定", emotion:"篤定・安心", states:["目標明確","自我掌控感強"]},
-  "方":{noun:"界線・秩序", adj:"端正・穩固", emotion:"安全感・踏實", states:["對秩序與規範的需求","自我界線清晰"]},
-  "圓":{noun:"完整・包容", adj:"圓潤・和諧", emotion:"滿足・安全感", states:["追求完整與圓滿","自我整合"]},
-  "斷裂線":{noun:"中斷・裂痕", adj:"破碎・突然", emotion:"驚訝・失落", states:["關係或經驗的中斷創傷","溝通斷裂"]},
-  "細線":{noun:"脆弱・謹慎", adj:"纖細・易斷", emotion:"不安・敏感", states:["自我強度不足","高敏感特質"]},
-  "開放弧線":{noun:"延展・未完成", adj:"柔和・開放", emotion:"期待・不確定感", states:["未完成的心理課題","對可能性保持開放"]},
-  "三角":{noun:"張力・方向", adj:"尖銳・聚焦", emotion:"緊張・企圖心", states:["目標導向的驅動力","內在衝突的角力"]},
-  "向上延伸":{noun:"渴望・成長", adj:"挺拔・積極", emotion:"希望・振奮", states:["自我實現的動力","對成長的渴望"]},
-  "塊狀色面":{noun:"沉重・穩固", adj:"厚重・密實", emotion:"沉悶・麻木", states:["情緒壓抑未表達","防衛機制堅固"]},
-  "密集交錯線":{noun:"混亂・壓力", adj:"雜亂・緊繃", emotion:"焦慮・煩躁", states:["心理負荷過重","思緒混亂"]},
-  "環繞包覆":{noun:"保護・封閉", adj:"緊密・圍繞", emotion:"安全感・被保護感", states:["自我保護機制啟動","對親密與安全的需求"]},
-  "向下墜落":{noun:"低落・釋放", adj:"沉重・消沉", emotion:"沮喪・悲傷", states:["情緒低落期","能量耗竭"]}
-};
-
-const COLORS = [
-  {id:"紅", name:"紅", hex:"#B23A2E", noun:"熱情・行動力", emotion:"憤怒・興奮"},
-  {id:"橙", name:"橙", hex:"#C97A3D", noun:"溫暖・連結", emotion:"愉悅・友善"},
-  {id:"黃", name:"黃", hex:"#C9A15A", noun:"希望・焦慮", emotion:"喜悅・緊張"},
-  {id:"綠", name:"綠", hex:"#5C7A6B", noun:"平靜・成長", emotion:"安穩・放鬆"},
-  {id:"藍", name:"藍", hex:"#3F5C72", noun:"憂鬱・信任", emotion:"憂傷・平靜"},
-  {id:"紫", name:"紫", hex:"#6B5271", noun:"矛盾・神秘", emotion:"困惑・敬畏"},
-  {id:"黑／灰", name:"黑／灰", hex:"#4A4A47", noun:"沉重・界線", emotion:"空虛・恐懼"}
+const COLOR_REF = [
+ {key:'red',name:'紅',hex:'#E4362A',h:5,noun:'熱情・行動力',adj:'強烈・熾熱',emo:'力量・警示'},
+ {key:'orange',name:'橙',hex:'#FF7A29',h:28,noun:'溫暖・連結',adj:'明亮・熱情',emo:'友善・活力'},
+ {key:'yellow',name:'黃',hex:'#F3C23E',h:45,noun:'希望・明亮',adj:'耀眼・輕快',emo:'期待・緊張'},
+ {key:'green',name:'綠',hex:'#3FBE72',h:145,noun:'平靜・成長',adj:'清新・舒緩',emo:'安穩・放鬆'},
+ {key:'blue',name:'藍',hex:'#3E7FC1',h:210,noun:'沉靜・深度',adj:'深沉・冷靜',emo:'平靜・孤獨'},
+ {key:'purple',name:'紫',hex:'#8C63C4',h:268,noun:'矛盾・神秘',adj:'神秘・深邃',emo:'敬畏・敏感'},
+ {key:'gray',name:'黑／灰',hex:'#6E6E76',h:-1,noun:'界線・保護',adj:'深沉・隱晦',emo:'冷靜・空白'}
 ];
 
-const NUMERALS = ["壹","貳","參","肆"];
+const ISSUE_HINTS = ['一段關係','工作與方向','自我價值','家庭課題','無力感','說不清的焦慮'];
 
-/* 每個符號的純線條圖示（不含文字），viewBox 統一 0 0 48 48 */
-const ICON_PATHS = {
-  "水滴": '<path d="M24 6C16 20 10 28 10 34a14 14 0 0 0 28 0c0-6-6-14-14-28Z"/>',
-  "月亮": '<path d="M30 8a18 18 0 1 0 8 34A15 15 0 0 1 30 8Z"/>',
-  "太陽": '<circle cx="24" cy="24" r="9"/><g stroke-linecap="round"><line x1="24" y1="2" x2="24" y2="9"/><line x1="24" y1="39" x2="24" y2="46"/><line x1="2" y1="24" x2="9" y2="24"/><line x1="39" y1="24" x2="46" y2="24"/><line x1="8" y1="8" x2="13" y2="13"/><line x1="35" y1="35" x2="40" y2="40"/><line x1="40" y1="8" x2="35" y2="13"/><line x1="13" y1="35" x2="8" y2="40"/></g>',
-  "花": '<circle cx="24" cy="13" r="6.5"/><circle cx="35" cy="24" r="6.5"/><circle cx="24" cy="35" r="6.5"/><circle cx="13" cy="24" r="6.5"/><circle cx="24" cy="24" r="4.5" fill="currentColor" stroke="none"/>',
-  "樹": '<circle cx="24" cy="18" r="12"/><line x1="24" y1="30" x2="24" y2="44"/>',
-  "火焰": '<path d="M24 4c6 8 2 12 6 16 3 3 5 7 5 11a11 11 0 0 1-22 0c0-4 2-6 4-9 1 3 3 4 5 3-2-6 0-14 2-21Z"/>',
-  "門": '<rect x="14" y="6" width="20" height="36" rx="1"/><circle cx="28" cy="24" r="1.6" fill="currentColor" stroke="none"/>',
-  "枯枝": '<path d="M8 42 L26 8 M18 22 L9 17 M22 15 L30 8 M22 26 L31 24"/>',
-  "根": '<path d="M24 6v14M24 20c-6 4-8 10-12 22M24 20c6 4 8 10 12 22M24 20c-3 6-2 12 0 18M24 20c3 6 2 12 0 18"/>',
-  "蛋": '<ellipse cx="24" cy="26" rx="12" ry="16"/>',
-  "鳥": '<path d="M4 29c9-15 17-15 20-4 3-11 15-11 24 4-11-4-16 1-24 9-8-8-13-13-20-9Z"/>',
-  "蝴蝶": '<ellipse cx="16" cy="18" rx="9" ry="12" transform="rotate(-20 16 18)"/><ellipse cx="32" cy="18" rx="9" ry="12" transform="rotate(20 32 18)"/><ellipse cx="16" cy="34" rx="6.5" ry="8.5" transform="rotate(-15 16 34)"/><ellipse cx="32" cy="34" rx="6.5" ry="8.5" transform="rotate(15 32 34)"/><line x1="24" y1="8" x2="24" y2="40"/>',
-  "魚": '<path d="M6 24c8-10 22-10 30 0-8 10-22 10-30 0Z"/><path d="M36 24l8-6v12Z"/><circle cx="14" cy="22" r="1.6" fill="currentColor" stroke="none"/>',
-  "十字路口": '<line x1="24" y1="4" x2="24" y2="44"/><line x1="4" y1="24" x2="44" y2="24"/>',
-  "迷宮": '<rect x="6" y="6" width="36" height="36"/><rect x="14" y="14" width="20" height="20"/><rect x="20" y="20" width="8" height="8"/><path d="M24 6v6M42 24h-8"/>',
-  "房子": '<path d="M8 24 L24 10 L40 24"/><path d="M12 22v20h24V22"/><rect x="20" y="30" width="8" height="12"/>',
-  "橋": '<path d="M6 34a18 18 0 0 1 36 0"/><line x1="10" y1="34" x2="10" y2="42"/><line x1="38" y1="34" x2="38" y2="42"/><line x1="6" y1="42" x2="42" y2="42"/>',
-  "螺旋": '<path d="M25 24c0-3.5 2.8-6 6-6s6 2.5 6 6-2.8 6-6 6c-5 0-9-4-9-9s4.5-11 11-11 13 5.5 13 13-6.5 15-15 15-17-7.5-17-17"/>',
-  "鑰匙": '<circle cx="14" cy="16" r="8"/><line x1="20" y1="22" x2="38" y2="40"/><line x1="30" y1="32" x2="36" y2="26"/><line x1="34" y1="36" x2="40" y2="30"/>',
-  "波浪線": '<path d="M4 24c4-8 8-8 12 0s8 8 12 0 8-8 12 0 8 8 12 0"/>',
-  "破碎形狀": '<path d="M10 10l14 6-4 12 16-4-6 18-20-8 6-14Z"/>',
-  "鎖鏈": '<ellipse cx="17" cy="18" rx="8" ry="10" transform="rotate(-20 17 18)"/><ellipse cx="31" cy="30" rx="8" ry="10" transform="rotate(-20 31 30)"/>',
-  "鏡子": '<ellipse cx="24" cy="18" rx="12" ry="14"/><line x1="24" y1="32" x2="24" y2="44"/><line x1="17" y1="44" x2="31" y2="44"/>',
-  "船": '<path d="M8 28h32l-5 10H13Z"/><line x1="24" y1="28" x2="24" y2="6"/><path d="M24 8l10 6-10 4Z"/>',
-  "螺旋線": '<path d="M24 30c-5 0-8-4-8-8s3-8 8-8 9 4 9 9-4 10-10 10-12-6-12-13 7-14 14-14"/>',
-  "鋸齒線": '<path d="M4 30l8-14 8 14 8-14 8 14 8-14"/>',
-  "直線": '<line x1="8" y1="36" x2="40" y2="12"/>',
-  "方": '<rect x="10" y="10" width="28" height="28"/>',
-  "圓": '<circle cx="24" cy="24" r="16"/>',
-  "斷裂線": '<line x1="6" y1="30" x2="18" y2="18"/><line x1="26" y1="30" x2="42" y2="18"/>',
-  "細線": '<line x1="8" y1="24" x2="40" y2="24" stroke-width="1.2"/>',
-  "開放弧線": '<path d="M8 32a20 20 0 0 1 32-16"/>',
-  "三角": '<path d="M24 8 L42 38 L6 38 Z"/>',
-  "向上延伸": '<line x1="24" y1="42" x2="24" y2="8"/><path d="M16 16l8-8 8 8"/>',
-  "塊狀色面": '<rect x="10" y="10" width="28" height="28" fill="currentColor" stroke="none" opacity="0.55"/>',
-  "密集交錯線": '<line x1="6" y1="18" x2="30" y2="42"/><line x1="6" y1="30" x2="18" y2="42"/><line x1="18" y1="6" x2="42" y2="30"/><line x1="30" y1="6" x2="42" y2="18"/><line x1="6" y1="6" x2="42" y2="42"/><line x1="42" y1="6" x2="6" y2="42"/>',
-  "環繞包覆": '<circle cx="24" cy="24" r="8"/><circle cx="24" cy="24" r="16"/>',
-  "向下墜落": '<line x1="24" y1="6" x2="24" y2="32"/><path d="M16 24l8 10 8-10"/>'
+/* ================= STATE ================= */
+const state = {
+  screen:1,
+  issue:'',
+  deck:[], // array of {domIndex, symbolIndex}
+  selected:[], // indices into state.deck
+  revealIndex:0,
+  colors:{} // deckIndex -> hex
 };
 
-function iconSvg(name){
-  const inner = ICON_PATHS[name] || '<circle cx="24" cy="24" r="14"/>';
-  return `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
-}
-
-function shuffleArray(arr){
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+/* ================= HELPERS ================= */
+function hexToHsl(hex){
+  let r=parseInt(hex.slice(1,3),16)/255, g=parseInt(hex.slice(3,5),16)/255, b=parseInt(hex.slice(5,7),16)/255;
+  let max=Math.max(r,g,b), min=Math.min(r,g,b), h,s,l=(max+min)/2;
+  if(max===min){h=0;s=0;}else{
+    let d=max-min; s = l>0.5? d/(2-max-min) : d/(max+min);
+    if(max===r) h=(g-b)/d+(g<b?6:0);
+    else if(max===g) h=(b-r)/d+2;
+    else h=(r-g)/d+4;
+    h*=60;
   }
+  return {h,s,l};
+}
+function nearestColorMeaning(hex){
+  const {s,l} = hexToHsl(hex);
+  if(s<0.16 || l<0.16 || l>0.92) return COLOR_REF.find(c=>c.key==='gray');
+  const {h} = hexToHsl(hex);
+  let best=null,bestD=999;
+  COLOR_REF.filter(c=>c.h>=0).forEach(c=>{
+    let d=Math.abs(h-c.h); d=Math.min(d,360-d);
+    if(d<bestD){bestD=d;best=c;}
+  });
+  return best;
+}
+function iconSVG(sym,size=48){
+  const strokeAttrs = sym.type==='stroke' ? `fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"`
+    : sym.type==='thin' ? `fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"`
+    : `fill="currentColor" stroke="none"`;
+  return `<svg viewBox="0 0 100 100" width="${size}" height="${size}" ${strokeAttrs}><path d="${sym.d}"/></svg>`;
+}
+function shuffle(arr){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
   return a;
 }
+function el(html){const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstChild;}
 
-/* ===================== 狀態 ===================== */
-const state = {
-  topic: "",
-  selected: [],           // 依序選擇的符號名稱
-  colorMap: {}            // { 符號名稱: colorId }
-};
-
-/* ===================== 氛圍星塵粒子 ===================== */
-(function initAmbientParticles(){
-  const layer = document.getElementById("ambient-particles");
-  const COUNT = 16;
-  for (let i = 0; i < COUNT; i++){
-    const span = document.createElement("span");
-    const left = Math.random() * 100;
-    const duration = 9 + Math.random() * 10;
-    const delay = Math.random() * 14;
-    const dx = (Math.random() * 40 - 20).toFixed(0) + "px";
-    const size = (1.5 + Math.random() * 2).toFixed(1) + "px";
-    span.style.left = left + "%";
-    span.style.width = size;
-    span.style.height = size;
-    span.style.setProperty("--dx", dx);
-    span.style.animationDuration = duration + "s";
-    span.style.animationDelay = "-" + delay + "s";
-    layer.appendChild(span);
+/* ================= NAV / SCREENS ================= */
+const TOTAL_SCREENS = 6;
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active','leaving'));
+  document.getElementById('screen-'+n).classList.add('active');
+  state.screen = n;
+  document.getElementById('backBtn').classList.toggle('hidden', n===1);
+  renderDots();
+  if(n===3) initDeck();
+  if(n===4) renderReveal();
+  if(n===5) renderFusion();
+}
+function renderDots(){
+  const wrap=document.getElementById('dots'); wrap.innerHTML='';
+  for(let i=1;i<=TOTAL_SCREENS;i++){
+    const d=document.createElement('span');
+    if(i===state.screen) d.classList.add('active');
+    else if(i<state.screen) d.classList.add('done');
+    wrap.appendChild(d);
   }
+}
+document.getElementById('backBtn').addEventListener('click',()=>{ if(state.screen>1) goTo(state.screen-1); });
+
+/* ---- Screen 1 hero mini-cards ---- */
+(function buildHero(){
+  const hero=document.getElementById('heroMark');
+  const picks=[SYMBOLS[16],SYMBOLS[4],SYMBOLS[2],SYMBOLS[28]]; // spiral, tree, sun, circle
+  picks.forEach((s,i)=>{
+    const c=el(`<div class="hero-card c${i+1}"></div>`);
+    c.innerHTML = iconSVG(s,40);
+    hero.appendChild(c);
+  });
 })();
+document.getElementById('startBtn').addEventListener('click',()=>goTo(2));
 
-/* ===================== DOM helpers ===================== */
-const $ = (id) => document.getElementById(id);
-const screens = ["screen-intro","screen-topic","screen-symbols","screen-colors","screen-prompt","screen-history"];
-function showScreen(id){
-  screens.forEach(s => $(s).classList.toggle("active", s === id));
-  window.scrollTo({top:0});
-}
-
-/* ===================== Screen 0 -> 1 ===================== */
-$("btn-start").addEventListener("click", () => showScreen("screen-topic"));
-$("btn-back-0").addEventListener("click", () => showScreen("screen-intro"));
-
-$("topic-input").addEventListener("input", (e) => {
-  state.topic = e.target.value.trim();
-  $("btn-topic-next").disabled = state.topic.length < 2;
+/* ---- Screen 2 ---- */
+const issueInput = document.getElementById('issueInput');
+const toStep3Btn = document.getElementById('toStep3Btn');
+issueInput.addEventListener('input',()=>{
+  state.issue = issueInput.value.trim();
+  toStep3Btn.disabled = state.issue.length < 2;
 });
-$("btn-topic-next").addEventListener("click", () => {
-  renderSymbolGrid();
-  showScreen("screen-symbols");
-});
-
-const BACK_ICON = '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="24" cy="24" r="14"/><circle cx="24" cy="24" r="7"/></svg>';
-
-/* ===================== Screen 2: Symbols ===================== */
-function renderSymbolGrid(){
-  const container = $("sym-grid-container");
-  container.innerHTML = "";
-  state.selected = [];
-  state.colorMap = {};
-
-  const shuffledKeys = shuffleArray(Object.keys(SYMBOLS_RAW));
-  const spread = document.createElement("div");
-  spread.className = "card-spread";
-
-  shuffledKeys.forEach(name => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.dataset.name = name;
-    const rot = (Math.random() * 10 - 5).toFixed(1);
-    card.style.setProperty("--rot", `${rot}deg`);
-    card.innerHTML = `
-      <div class="card-inner">
-        <div class="card-face card-back">${BACK_ICON}</div>
-        <div class="card-face card-front">${iconSvg(name)}</div>
-      </div>
-    `;
-    card.addEventListener("click", () => toggleSymbol(name, card));
-    spread.appendChild(card);
+(function buildChips(){
+  const row=document.getElementById('chipRow');
+  ISSUE_HINTS.forEach(h=>{
+    const c=el(`<div class="chip">${h}</div>`);
+    c.addEventListener('click',()=>{
+      issueInput.value = (issueInput.value ? issueInput.value+'\n' : '') + '關於「'+h+'」，我目前的感覺是⋯⋯';
+      issueInput.dispatchEvent(new Event('input'));
+      issueInput.focus();
+    });
+    row.appendChild(c);
   });
+})();
+toStep3Btn.addEventListener('click',()=>goTo(3));
 
-  container.appendChild(spread);
-
-  // 洗牌攤開後，接著逐張翻牌顯示圖示
-  const cards = spread.querySelectorAll(".card");
-  cards.forEach((card, i) => {
-    const dealDelay = 20 + i * 22;
-    setTimeout(() => card.classList.add("dealt"), dealDelay);
-    setTimeout(() => card.classList.add("revealed"), dealDelay + 260);
+/* ---- Screen 3 : blind draw ---- */
+function initDeck(){
+  if(state.deck.length) return; // already built
+  const order = shuffle(SYMBOLS.map((_,i)=>i));
+  state.deck = order.map((symbolIndex, domIndex)=>({domIndex, symbolIndex}));
+  const deckEl = document.getElementById('deck');
+  deckEl.innerHTML='';
+  state.deck.forEach((card,i)=>{
+    const back = el(`<div class="card-back" data-i="${i}">${iconSVG(SYMBOLS[16],26)}</div>`);
+    back.style.transform = `rotate(${(i%2===0?-1:1)*(2+Math.random()*3)}deg)`;
+    back.addEventListener('click',()=>toggleCard(i));
+    deckEl.appendChild(back);
   });
-
-  refreshSymbolUI();
 }
-
-$("btn-reshuffle").addEventListener("click", () => {
-  renderSymbolGrid();
-});
-
-function toggleSymbol(name, card){
-  const idx = state.selected.indexOf(name);
-  if (idx > -1){
-    state.selected.splice(idx, 1);
+function toggleCard(i){
+  const idx = state.selected.indexOf(i);
+  if(idx>-1){
+    state.selected.splice(idx,1);
   } else {
-    if (state.selected.length >= 4) return;
-    state.selected.push(name);
+    if(state.selected.length>=4) return;
+    state.selected.push(i);
   }
-  refreshSymbolUI();
+  refreshDeckUI();
 }
-
-function refreshSymbolUI(){
-  document.querySelectorAll(".card").forEach(card => {
-    const name = card.dataset.name;
-    const order = state.selected.indexOf(name);
-    const isSelected = order > -1;
-    card.classList.toggle("selected", isSelected);
-    const existingBadge = card.querySelector(".seal-badge");
-    if (existingBadge) existingBadge.remove();
-    if (isSelected){
-      const badge = document.createElement("div");
-      badge.className = "seal-badge";
-      badge.textContent = NUMERALS[order];
-      card.appendChild(badge);
-      card.style.transform = "translateY(-4px) scale(1.05) rotate(0deg)";
-    } else if (card.classList.contains("dealt")) {
-      card.style.transform = "";
-    }
-    card.classList.toggle("disabled", state.selected.length >= 4 && !isSelected);
+function refreshDeckUI(){
+  document.querySelectorAll('.card-back').forEach(b=>{
+    const i=+b.dataset.i;
+    const on = state.selected.includes(i);
+    b.classList.toggle('selected',on);
+    b.classList.toggle('disabled', !on && state.selected.length>=4);
   });
-  $("sym-count").textContent = state.selected.length;
-  $("btn-sym-next").disabled = state.selected.length < 3;
+  document.getElementById('selCount').textContent = state.selected.length;
+  document.getElementById('toStep4Btn').disabled = state.selected.length<3;
 }
+document.getElementById('toStep4Btn').addEventListener('click',()=>{ state.revealIndex=0; goTo(4); });
 
-$("btn-back-1").addEventListener("click", () => showScreen("screen-topic"));
-$("btn-sym-next").addEventListener("click", () => {
-  renderColorScreen();
-  showScreen("screen-colors");
-});
-
-/* ===================== Screen 3: Colors ===================== */
-function renderColorScreen(){
-  const wrap = $("color-rows");
-  wrap.innerHTML = "";
-  const spread = document.createElement("div");
-  spread.className = "color-spread";
-
-  state.selected.forEach((name, i) => {
-    const colorId = state.colorMap[name];
-    const colorInfo = colorId ? COLORS.find(c => c.id === colorId) : null;
-
-    const card = document.createElement("div");
-    card.className = "paint-card";
-    card.innerHTML = `
-      <div class="num-badge">${NUMERALS[i]}</div>
-      <div class="icon-paint" data-sym="${name}">
-        <div class="icon-base">${iconSvg(name)}</div>
-        <div class="icon-color${colorInfo ? " filled" : ""}" style="color:${colorInfo ? colorInfo.hex : "transparent"}">${iconSvg(name)}</div>
-      </div>
-      <span class="serif" style="font-size:15px; font-weight:600; color:var(--ink);">${name}</span>
-      <div class="paint-swatches" data-sym="${name}"></div>
-    `;
-
-    const swatchWrap = card.querySelector(".paint-swatches");
-    COLORS.forEach(c => {
-      const sw = document.createElement("div");
-      sw.className = "paint-swatch" + (state.colorMap[name] === c.id ? " active" : "");
-      sw.style.background = c.hex;
-      sw.title = c.name;
-      sw.dataset.colorId = c.id;
-      sw.addEventListener("click", () => pickColor(name, c.id));
-      swatchWrap.appendChild(sw);
-    });
-
-    spread.appendChild(card);
+/* ---- Screen 4 : reveal + color ---- */
+function renderReveal(){
+  const prog=document.getElementById('revealProgress'); prog.innerHTML='';
+  state.selected.forEach((_,i)=>{
+    const s=el(`<span></span>`); if(i<=state.revealIndex) s.classList.add('on');
+    prog.appendChild(s);
   });
+  const deckIdx = state.selected[state.revealIndex];
+  const sym = SYMBOLS[state.deck[deckIdx].symbolIndex];
+  const card = document.getElementById('flipcard');
+  const currentColor = state.colors[deckIdx];
+  card.innerHTML = `
+    <div class="flip-icon">${iconSVG(sym,60)}</div>
+    <h2 class="flip-name">${sym.name}</h2>
+    <div class="tag-row">
+      <span class="tag">${sym.noun}</span><span class="tag">${sym.adj}</span><span class="tag">${sym.emo}</span>
+    </div>
+    <div class="qbox"><p>${sym.q[0]}</p><p>${sym.q[1]}</p></div>
+    <div class="colorpick">
+      <div class="label">選一個屬於此刻的顏色</div>
+      <div class="swatches" id="swatches"></div>
+      <div class="color-meaning" id="colorMeaning">${currentColor? describeColor(currentColor):'&nbsp;'}</div>
+    </div>
+  `;
+  const sw = document.getElementById('swatches');
+  COLOR_REF.forEach(c=>{
+    const dot = el(`<div class="swatch" style="background:${c.hex}" data-hex="${c.hex}" title="${c.name}"></div>`);
+    if(currentColor && currentColor.toLowerCase()===c.hex.toLowerCase()) dot.classList.add('active');
+    dot.addEventListener('click',()=>setColor(deckIdx,c.hex));
+    sw.appendChild(dot);
+  });
+  const customWrap = el(`<div class="swatch custom" title="自訂顏色">+<input type="color" id="customColor"></div>`);
+  sw.appendChild(customWrap);
+  document.getElementById('customColor').addEventListener('input',(e)=>setColor(deckIdx,e.target.value));
 
-  wrap.appendChild(spread);
+  document.getElementById('prevCardBtn').disabled = state.revealIndex===0;
+  document.getElementById('nextCardBtn').disabled = state.revealIndex===state.selected.length-1;
+  updateStep5Btn();
 }
+function describeColor(hex){
+  const ref = nearestColorMeaning(hex);
+  return `接近「${ref.name}」－ ${ref.noun}・${ref.emo}`;
+}
+function setColor(deckIdx,hex){
+  state.colors[deckIdx]=hex;
+  renderReveal();
+}
+function updateStep5Btn(){
+  const allColored = state.selected.every(d=>state.colors[d]);
+  document.getElementById('toStep5Btn').disabled = !allColored;
+}
+document.getElementById('prevCardBtn').addEventListener('click',()=>{ if(state.revealIndex>0){state.revealIndex--; renderReveal();} });
+document.getElementById('nextCardBtn').addEventListener('click',()=>{ if(state.revealIndex<state.selected.length-1){state.revealIndex++; renderReveal();} });
+document.getElementById('toStep5Btn').addEventListener('click',()=>goTo(5));
 
-function pickColor(name, colorId){
-  const iconPaint = document.querySelector(`.icon-paint[data-sym="${name}"]`);
-  const swatchWrap = document.querySelector(`.paint-swatches[data-sym="${name}"]`);
-  if (!iconPaint || !swatchWrap) return;
-
-  const colorLayer = iconPaint.querySelector(".icon-color");
-  const isSame = state.colorMap[name] === colorId;
-
-  if (isSame){
-    delete state.colorMap[name];
-    colorLayer.classList.remove("filled");
+/* ---- Screen 5 : fusion canvas ---- */
+function drawIconOnCanvas(ctx,sym,cx,cy,size,color,alpha,rotation){
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.translate(cx,cy);
+  ctx.rotate(rotation||0);
+  const scale = size/100;
+  ctx.scale(scale,scale);
+  ctx.translate(-50,-50);
+  const path = new Path2D(sym.d);
+  if(sym.type==='fill'){
+    ctx.fillStyle = color; ctx.fill(path);
   } else {
-    state.colorMap[name] = colorId;
-    const info = COLORS.find(c => c.id === colorId);
-    colorLayer.style.color = info.hex;
-    colorLayer.classList.add("filled");
+    ctx.strokeStyle = color;
+    ctx.lineWidth = sym.type==='thin' ? 2.2 : 5;
+    ctx.lineJoin='round'; ctx.lineCap='round';
+    ctx.stroke(path);
   }
+  ctx.restore();
+}
+function renderFusion(){
+  const canvas = document.getElementById('fusionCanvas');
+  const ctx = canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  // rounded card background
+  const r=42;
+  ctx.save();
+  roundRectPath(ctx,0,0,W,H,r);
+  ctx.clip();
+  const grad = ctx.createLinearGradient(0,0,W,H);
+  grad.addColorStop(0,'#131317'); grad.addColorStop(1,'#08080a');
+  ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+  // soft glow
+  const gg = ctx.createRadialGradient(W*0.5,H*0.38,20,W*0.5,H*0.38,W*0.75);
+  gg.addColorStop(0,'rgba(255,255,255,0.05)'); gg.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=gg; ctx.fillRect(0,0,W,H);
+  // grid dots texture
+  ctx.fillStyle='rgba(255,255,255,0.035)';
+  for(let x=20;x<W;x+=26){ for(let y=20;y<H;y+=26){ ctx.beginPath(); ctx.arc(x,y,1.1,0,7); ctx.fill(); } }
 
-  swatchWrap.querySelectorAll(".paint-swatch").forEach(sw => {
-    sw.classList.toggle("active", !isSame && sw.dataset.colorId === colorId);
+  ctx.globalCompositeOperation='lighter';
+  const n = state.selected.length;
+  state.selected.forEach((deckIdx,i)=>{
+    const sym = SYMBOLS[state.deck[deckIdx].symbolIndex];
+    const color = state.colors[deckIdx] || '#ffffff';
+    const angle = (i/n)*Math.PI*2 - Math.PI/2;
+    const radius = n>1? 60:0;
+    const cx = W/2 + Math.cos(angle)*radius*1.4;
+    const cy = H*0.42 + Math.sin(angle)*radius*1.2;
+    const size = W*0.52 - i*10;
+    const rot = (i%2===0?-1:1)*0.06;
+    drawIconOnCanvas(ctx,sym,cx,cy,size,color,0.62,rot);
   });
-}
+  ctx.globalCompositeOperation='source-over';
 
-$("btn-back-2").addEventListener("click", () => showScreen("screen-symbols"));
-$("btn-color-next").addEventListener("click", () => {
-  addHistoryEntry();
-  showPromptScreen();
+  // border highlight
+  roundRectPath(ctx,2,2,W-4,H-4,r-2);
+  ctx.strokeStyle='rgba(255,255,255,0.14)'; ctx.lineWidth=2; ctx.stroke();
+
+  // small orbit dot detail (echoes reference motif)
+  ctx.beginPath(); ctx.fillStyle='rgba(255,255,255,0.85)';
+  ctx.arc(W*0.78,H*0.2,4,0,7); ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,0.35)'; ctx.lineWidth=1.4;
+  ctx.beginPath(); ctx.moveTo(W*0.78,H*0.2); ctx.lineTo(W*0.9,H*0.11); ctx.stroke();
+
+  // footer text
+  ctx.restore();
+  ctx.font='600 13px "Noto Sans TC",sans-serif';
+  ctx.fillStyle='rgba(244,242,238,0.55)';
+  ctx.textAlign='center';
+  const names = state.selected.map(d=>SYMBOLS[state.deck[d].symbolIndex].name).join(' · ');
+  ctx.fillText(names, W/2, H-38);
+  ctx.font='700 15px "Noto Serif TC",serif';
+  ctx.fillStyle='rgba(244,242,238,0.85)';
+  ctx.fillText('神秘符號探索', W/2, H-16);
+}
+function roundRectPath(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+document.getElementById('downloadBtn').addEventListener('click',()=>{
+  const canvas=document.getElementById('fusionCanvas');
+  const a=document.createElement('a');
+  a.download='符號卡-'+Date.now()+'.png';
+  a.href=canvas.toDataURL('image/png');
+  a.click();
 });
-
-/* ===================== Screen 4: Dialogue ===================== */
-function buildFullPrompt(){
-  const orderLines = state.selected.map((name, i) => {
-    const d = SYMBOLS_RAW[name];
-    const colorId = state.colorMap[name];
-    const colorInfo = colorId ? COLORS.find(c => c.id === colorId) : null;
-
-    // 每次只隨機抽取其中一部分描述、外加隨機挑一句可能連結，
-    // 避免同一個符號每次都輸出完全一樣的固定標籤組合
-    const descriptorPool = [`象徵：${d.noun}`, `特質：${d.adj}`, `情緒基調：${d.emotion}`];
-    const pickedDescriptors = shuffleArray(descriptorPool).slice(0, 2);
-    const pickedState = d.states[Math.floor(Math.random() * d.states.length)];
-
-    let line = `${i+1}. ${name}（${pickedDescriptors.join("／")}；其中一種可能連結：${pickedState}）`;
-    if (colorInfo) line += `，並上色為「${colorInfo.name}」（${colorInfo.noun}）`;
-    return line;
-  }).join("\n");
-
-  return `你現在是「符號陪伴」，一位以卡爾・榮格（Carl Jung）的原型心理學、繪畫心理學（如屋樹人測驗）、符號學與色彩心理學為參考語言的自我探索陪伴引導者。接下來請你陪我一步步探索我想釐清的議題——像一位溫柔、有耐心的朋友坐在我身邊，不是在做測驗或審問我。
-
-【我想探索的議題】
-${state.topic}
-
-【我依序選擇的符號（及上色情形）】
-${orderLines}
-（以上每個符號後面括號裡的描述，只是從多種可能參考角度裡隨機抽取的「其中一種」，不是這個符號的完整或固定定義，也不是唯一正確答案。請不要把它當成標準答案照本宣科，而是把它當成一個引子，結合你自己對榮格原型、符號學更廣的理解，以及我實際說出來的話，做出更貼近我此刻狀態的詮釋——每個人、每一次抽到同樣的符號，感受都可能完全不同。）
-
-【引導規則，請務必全程遵守】
-1. 你的角色是溫柔陪伴的引導者，不是心理治療師，全程不做診斷、不貼標籤、不下確定的結論。
-2. 稱呼我用「你」，不要用「您」——「您」聽起來疏遠、公式化，「你」才像朋友在說話。語氣要溫柔、放鬆、帶著體貼，像在輕聲說話，不要銳利、不要有審問感。
-3. 絕對禁止每次都用同一種公式開頭，例如「聽到你說『XXX』，感覺⋯」或「當你提到『XXX』⋯」。不要機械式地把我剛剛講的字句原封不動放進引號裡覆述一遍——這樣讀起來像在跑話術模板，不像真的有人在聽。試著讓每一輪的開場都長得不一樣：有時候直接從一個感受切入，有時候分享你當下的一個小小聯想或畫面，有時候就直接問，不需要每次都先摘要我講的話。
-4. 非常重要：不要每一輪都用問句轟炸我，那會讓我感覺像被審問、被逼問，而不是被陪伴。請適時地根據榮格原型理論、符號學或心理學的參考語言，主動給出一點點暫定的、溫柔的小小解讀或連結，作為一個可以被我認同、修正、或推翻的「方向」，而不是只丟問題給我——例如「我在想，這是不是也呼應了⋯」、「如果從你選的符號來看，也許藏著⋯的感覺，不知道你聽起來準不準」。給完這樣的小觀察後，可以再輕輕帶一個開放式問題，也可以就停在那個觀察上，留一點空間讓我自己接話，不用每次都追加問句。整體上，反饋、觀察、提問三者交錯出現，比較像自然對話，而不是連續發問。
-5. 提問角度要多變，不要每次都問「這對你來說意味著什麼」。可以問具體的畫面、身體的感覺、一段回憶、跟其他符號或顏色的關聯、一個假設性的「如果⋯會怎樣」，或者單純安靜地陪一句、晚一點再問下一題也可以。
-6. 可以輕巧地引用我選的符號、順序、顏色作為反饋或提問的引子，但每次只聚焦一個切入點；也可以不引用符號，直接順著我剛剛說的內容走下去。
-7. 每隔幾輪，適度把話題輕輕帶回我最初想探索的議題，或整體符號組合的全貌，避免整段對話變成只針對我最後一句話做文字接龍。
-8. 可以誠實地表達你當下的感受或好奇（例如「這讓我有點好奇」、「聽到這裡我有點心疼」），讓陪伴感是真的，但不要每次都用同一種驚嘆語氣，也不要過度戲劇化。
-9. 明確讓我知道，符號與心理狀態的對應只是一種「參考的心理學語言」，不是絕對真理，你給的小小解讀也只是一個方向、隨時歡迎我修正或推翻，答案最終要回到我自己身上——這件事偶爾自然地提一次就好，不用每則重複。
-10. 絕對不能做醫療建議或診斷。若我的話語透露自傷、自殺意念或急性心理危機的跡象，該輪請先給予關懷與陪伴，明確建議我聯繫專業資源（例如安心專線1925、生命線1995、張老師專線1980），且那一輪不要再問探索性問題。
-11. 使用繁體中文，語氣溫暖、溫柔、真誠、不評判，避免心理學術語堆疊，回覆長度保持精簡，通常2-4句話以內。
-
-請這樣開始第一輪回覆：
-先用1-2句話，溫柔簡短地自我介紹「符號陪伴」是什麼——提一下這是以卡爾・榮格的原型心理學與符號、色彩心理學為參考脈絡的陪伴引導，不是心理測驗、也不是診斷。接著溫和地回應我選擇這些符號、順序、顏色本身所傳遞出的感覺，然後根據規則4，給我一個溫柔的小小解讀方向，或提出一個開放式問題，陪我開始談談我想探索的議題——但整體語氣要像邀請我一起想，而不是逼我回答。`;
-}
-
-function renderSealStrip(){
-  const strip = $("seal-strip");
-  strip.innerHTML = "";
-  state.selected.forEach((name, i) => {
-    const colorId = state.colorMap[name];
-    const colorInfo = colorId ? COLORS.find(c => c.id === colorId) : null;
-    const chip = document.createElement("div");
-    chip.className = "seal-chip";
-    chip.innerHTML = `<span class="num">${NUMERALS[i]}</span><span>${name}</span>`;
-    if (colorInfo){
-      const dot = document.createElement("span");
-      dot.className = "dot";
-      dot.style.background = colorInfo.hex;
-      chip.appendChild(dot);
+document.getElementById('shareBtn').addEventListener('click',async ()=>{
+  const canvas=document.getElementById('fusionCanvas');
+  canvas.toBlob(async (blob)=>{
+    const file=new File([blob],'symbol-card.png',{type:'image/png'});
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      try{ await navigator.share({files:[file],title:'我的專屬符號卡'}); }catch(e){}
+    } else {
+      showToast('請長按或右鍵圖片以儲存分享');
     }
-    strip.appendChild(chip);
   });
-  $("topic-echo").textContent = state.topic;
-}
-
-function showPromptScreen(){
-  renderSealStrip();
-  $("prompt-output").value = buildFullPrompt();
-  showScreen("screen-prompt");
-}
-
-$("btn-copy-prompt").addEventListener("click", async () => {
-  const textarea = $("prompt-output");
-  const btn = $("btn-copy-prompt");
-  try {
-    await navigator.clipboard.writeText(textarea.value);
-  } catch (err){
-    // 部分瀏覽器環境（例如非 https）不支援 clipboard API，改用傳統選取複製法
-    textarea.select();
-    document.execCommand("copy");
-  }
-  btn.textContent = "已複製 ✓";
-  btn.classList.add("copied");
-  setTimeout(() => {
-    btn.textContent = "複製提示詞";
-    btn.classList.remove("copied");
-  }, 1800);
 });
+document.getElementById('toStep6Btn').addEventListener('click',()=>goTo(6));
 
-$("btn-back-3").addEventListener("click", () => showScreen("screen-colors"));
-$("btn-restart").addEventListener("click", () => {
-  state.topic = "";
-  state.selected = [];
-  state.colorMap = {};
-  $("topic-input").value = "";
-  $("btn-topic-next").disabled = true;
-  showScreen("screen-intro");
-});
-
-/* ===================== 歷史紀錄（localStorage，僅存在此裝置此瀏覽器） ===================== */
-const HISTORY_KEY = "symbolCompanion.history.v1";
-const HISTORY_MAX = 30;
-
-function loadHistory(){
-  try {
-    const raw = localStorage.getItem(HISTORY_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (err){
-    console.warn("讀取歷史紀錄失敗（可能是無痕模式或瀏覽器限制）：", err);
-    return [];
-  }
-}
-
-function saveHistoryList(list){
-  try {
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
-    return true;
-  } catch (err){
-    console.warn("寫入歷史紀錄失敗（可能是無痕模式或儲存空間已滿）：", err);
-    return false;
-  }
-}
-
-function addHistoryEntry(){
-  if (state.selected.length === 0) return;
-  const list = loadHistory();
-  list.unshift({
-    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-    ts: Date.now(),
-    topic: state.topic,
-    selected: state.selected.slice(),
-    colorMap: Object.assign({}, state.colorMap)
+/* ---- Screen 6 : prompt ---- */
+function buildPrompt(){
+  const lines=[];
+  lines.push('你是一位融合榮格心理學（原型與象徵）與敘事引導的探索夥伴。以下是我透過「神秘符號探索」抽出的個人化符號組合，請你根據這些資訊，陪我進行一場深入但溫和的自我探索對話，不要急著給答案或建議。');
+  lines.push('');
+  lines.push('【我目前想探索的議題】');
+  lines.push(state.issue || '（尚未特別描述，請先邀請我說說看）');
+  lines.push('');
+  lines.push('【我抽到的符號】');
+  state.selected.forEach((deckIdx,i)=>{
+    const sym = SYMBOLS[state.deck[deckIdx].symbolIndex];
+    const hex = state.colors[deckIdx];
+    const cref = hex? nearestColorMeaning(hex) : null;
+    lines.push(`${i+1}. ${sym.name}（${sym.noun}／${sym.adj}／${sym.emo}）－我直覺選的顏色接近「${cref?cref.name:'未指定'}」（${cref?cref.noun+'・'+cref.emo:''}）`);
+    lines.push(`   反思提示：${sym.q[0]}／${sym.q[1]}`);
   });
-  saveHistoryList(list.slice(0, HISTORY_MAX));
+  lines.push('');
+  lines.push('請你依照以下方式引導我：');
+  lines.push('1. 先簡短說明這幾個符號與顏色組合，在原型意象上可能透露出的共通主題或張力，用邀請式的語氣，不要下定論。');
+  lines.push('2. 針對我的議題，挑一個最有共鳴的符號，用一個開放式問題邀請我先自由聯想，不用急著分析。');
+  lines.push('3. 陪我一層層探索：這個符號讓我想到生命中的什麼場景、關係或感受？它想告訴我什麼？');
+  lines.push('4. 適時反映我話語中透露、但我自己可能沒意識到的情緒或矛盾，幫我看見盲點，而不是替我下結論。');
+  lines.push('5. 最後，陪我把探索到的洞察收斂成一句屬於我自己的話，或一個具體的下一步小行動。');
+  lines.push('');
+  lines.push('請用溫暖、不批判、留白的語氣，一次只問一個問題，讓對話自然展開。');
+  return lines.join('\n');
 }
-
-function deleteHistoryEntry(id){
-  saveHistoryList(loadHistory().filter(e => e.id !== id));
-  renderHistoryScreen();
-}
-
-function formatHistoryDate(ts){
-  const d = new Date(ts);
-  const pad = n => String(n).padStart(2, "0");
-  return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-function renderHistoryScreen(){
-  const wrap = $("history-list");
-  wrap.innerHTML = "";
-  const list = loadHistory();
-
-  if (list.length === 0){
-    wrap.innerHTML = `<p class="sub" style="text-align:center; padding:36px 0;">還沒有任何紀錄。完成一次符號選擇後，會自動存在這裡（只存在這台裝置）。</p>`;
-    return;
-  }
-
-  list.forEach(entry => {
-    const card = document.createElement("div");
-    card.className = "history-card";
-
-    const chips = entry.selected.map((name, i) => {
-      const colorId = entry.colorMap ? entry.colorMap[name] : null;
-      const colorInfo = colorId ? COLORS.find(c => c.id === colorId) : null;
-      const dot = colorInfo ? `<span class="dot" style="background:${colorInfo.hex}"></span>` : "";
-      return `<div class="seal-chip"><span class="num">${NUMERALS[i] || (i + 1)}</span><span>${name}</span>${dot}</div>`;
-    }).join("");
-
-    card.innerHTML = `
-      <div class="history-date">${formatHistoryDate(entry.ts)}</div>
-      <div class="history-topic">${entry.topic || "（未填寫議題）"}</div>
-      <div class="seal-strip" style="border:none; margin:0; padding:6px 0 0;">${chips}</div>
-      <div class="history-actions">
-        <button class="btn ghost small" data-action="reopen" type="button">重新開啟</button>
-        <button class="btn ghost small" data-action="delete" type="button">刪除</button>
-      </div>
-    `;
-
-    card.querySelector('[data-action="reopen"]').addEventListener("click", () => {
-      state.topic = entry.topic;
-      state.selected = entry.selected.slice();
-      state.colorMap = Object.assign({}, entry.colorMap);
-      showPromptScreen();
-    });
-    card.querySelector('[data-action="delete"]').addEventListener("click", () => {
-      deleteHistoryEntry(entry.id);
-    });
-
-    wrap.appendChild(card);
-  });
-}
-
-$("btn-view-history").addEventListener("click", () => {
-  renderHistoryScreen();
-  showScreen("screen-history");
-});
-$("btn-history-back").addEventListener("click", () => showScreen("screen-intro"));
-$("btn-history-clear").addEventListener("click", () => {
-  if (confirm("確定要清除所有探索紀錄嗎？這個動作無法復原。")){
-    saveHistoryList([]);
-    renderHistoryScreen();
+document.getElementById('copyBtn').addEventListener('click', async ()=>{
+  const text = buildPrompt();
+  try{
+    await navigator.clipboard.writeText(text);
+    showToast('已複製！貼到你常用的 AI 對話框開始探索吧');
+  }catch(e){
+    const ta=document.createElement('textarea');
+    ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); showToast('已複製！貼到你常用的 AI 對話框開始探索吧'); }
+    catch(e2){ showToast('複製失敗，請手動長按選取'); }
+    document.body.removeChild(ta);
   }
 });
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+document.getElementById('restartBtn').addEventListener('click',()=>{
+  state.issue=''; state.deck=[]; state.selected=[]; state.revealIndex=0; state.colors={};
+  issueInput.value=''; toStep3Btn.disabled=true;
+  goTo(1);
+});
+
+/* init */
+goTo(1);
 </script>
 </body>
 </html>
