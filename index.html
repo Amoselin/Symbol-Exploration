@@ -131,6 +131,13 @@ textarea:focus{border-color:var(--amber-dim);}
 .card-back.disabled{opacity:.35;pointer-events:none;}
 #screen-3 .nav-row{padding:0 24px 4px;}
 .hint{padding:0 24px;color:var(--ink-faint);font-size:12.5px;text-align:center;margin-top:2px;}
+.deck-controls{display:flex;align-items:center;gap:12px;padding:0 24px;margin:0 0 14px;}
+.scroll-arrow{flex:0 0 auto;width:32px;height:32px;border-radius:50%;border:1px solid var(--line-strong);background:rgba(255,255,255,.02);color:var(--ink-dim);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;line-height:1;transition:.2s;}
+.scroll-arrow:hover{color:var(--ink);border-color:var(--amber-dim);}
+.scroll-arrow:active{transform:scale(.92);}
+.scroll-track{flex:1;height:4px;border-radius:4px;background:var(--line);position:relative;cursor:pointer;}
+.scroll-thumb{position:absolute;top:50%;left:0;height:14px;min-width:40px;border-radius:8px;background:var(--amber);transform:translateY(-50%);cursor:grab;box-shadow:0 4px 10px -3px rgba(255,90,43,.6);touch-action:none;}
+.scroll-thumb:active{cursor:grabbing;}
 
 /* SCREEN 4 - reveal + color */
 #screen-4{padding-top:4px;}
@@ -138,27 +145,21 @@ textarea:focus{border-color:var(--amber-dim);}
 .reveal-progress span{flex:1;height:3px;border-radius:3px;background:var(--line);}
 .reveal-progress span.on{background:var(--amber);}
 .flipcard{
-  margin-top:14px;background:linear-gradient(160deg,var(--surface-2),var(--surface));
-  border:1px solid var(--line-strong);border-radius:20px;padding:26px 22px 20px;position:relative;overflow:hidden;
+  margin-top:18px;background:linear-gradient(160deg,var(--surface-2),var(--surface));
+  border:1px solid var(--line-strong);border-radius:24px;padding:40px 22px 30px;position:relative;overflow:hidden;
+  text-align:center;display:flex;flex-direction:column;align-items:center;flex:1;justify-content:center;min-height:340px;
 }
 .flipcard::after{content:'';position:absolute;top:-40%;right:-30%;width:70%;height:70%;
   background:radial-gradient(circle,rgba(255,90,43,.13),transparent 65%);pointer-events:none;}
-.flip-icon{width:60px;height:60px;color:var(--amber);margin-bottom:12px;}
-.flip-name{font-family:var(--serif);font-size:26px;font-weight:700;margin:0 0 10px;}
-.tag-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px;}
-.tag{font-size:11.5px;padding:5px 10px;border-radius:100px;border:1px solid var(--line-strong);color:var(--ink-dim);}
-.qbox{background:rgba(0,0,0,.22);border-radius:12px;padding:14px 15px;margin-bottom:6px;}
-.qbox p{margin:0 0 8px;font-size:13.5px;color:var(--ink-dim);line-height:1.7;}
-.qbox p:last-child{margin-bottom:0;}
-.qbox p::before{content:'◦ ';color:var(--amber);}
-.colorpick{margin-top:18px;}
-.colorpick .label{font-size:12px;color:var(--ink-dim);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;}
-.swatches{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-.swatch{width:34px;height:34px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:.2s;position:relative;}
-.swatch.active{border-color:#fff;transform:scale(1.12);}
-.swatch.custom{background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;overflow:hidden;}
-.swatch.custom input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.color-meaning{margin-top:10px;font-size:12.5px;color:var(--ink-faint);min-height:16px;}
+.flip-icon{width:150px;height:150px;color:var(--amber);margin:0 auto 20px;transition:color .3s ease;filter:drop-shadow(0 10px 24px rgba(0,0,0,.4));}
+.flip-icon svg{width:100%;height:100%;}
+.flip-name{font-family:var(--serif);font-size:32px;font-weight:700;margin:0 0 22px;letter-spacing:.03em;}
+.colorpick{width:100%;}
+.colorpick .label{font-size:12px;color:var(--ink-dim);letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;}
+.swatches{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center;}
+.swatch{width:36px;height:36px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:.2s;position:relative;}
+.swatch.active{border-color:#fff;transform:scale(1.14);}
+.color-meaning{margin-top:12px;font-size:12.5px;color:var(--ink-faint);min-height:16px;}
 #screen-4 .nav-row{margin-top:20px;padding-bottom:6px;}
 .reveal-nav{display:flex;justify-content:space-between;margin-top:14px;}
 .reveal-nav button{background:none;border:none;color:var(--ink-dim);font-size:13px;cursor:pointer;padding:8px 4px;}
@@ -166,8 +167,22 @@ textarea:focus{border-color:var(--amber-dim);}
 
 /* SCREEN 5 - fusion */
 #screen-5{align-items:center;text-align:center;padding-top:8px;}
-.fusion-stage{width:100%;max-width:300px;margin:14px auto 8px;position:relative;}
-canvas#fusionCanvas{width:100%;height:auto;border-radius:24px;display:block;box-shadow:0 30px 60px -20px rgba(0,0,0,.8);}
+.fusion-stage{width:100%;max-width:300px;margin:14px auto 8px;position:relative;aspect-ratio:600/840;}
+canvas#fusionCanvas{width:100%;height:100%;border-radius:24px;display:block;box-shadow:0 30px 60px -20px rgba(0,0,0,.8);position:absolute;inset:0;opacity:0;transition:opacity .7s ease;}
+canvas#fusionCanvas.show{opacity:1;}
+.fusion-spread{position:absolute;inset:0;transition:opacity .5s ease;}
+.fusion-spread.hide{opacity:0;pointer-events:none;}
+.mini-card{
+  position:absolute;top:50%;left:50%;width:46%;aspect-ratio:3/4;margin:calc(-23% - 0px) 0 0 -23%;border-radius:16px;
+  background:linear-gradient(160deg,var(--surface-2),var(--surface));
+  border:1px solid var(--line-strong);box-shadow:0 16px 30px -14px rgba(0,0,0,.7);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px;
+  transition:transform .9s cubic-bezier(.22,.85,.28,1), opacity .6s ease;opacity:1;
+}
+.mini-card .mc-icon{width:40%;}
+.mini-card .mc-icon svg{width:100%;height:100%;display:block;}
+.mini-card span{font-family:var(--serif);font-size:13px;color:var(--ink-dim);}
+#fuseBtn{margin-top:18px;padding:16px 40px;}
 .fusion-actions{display:flex;gap:12px;margin-top:20px;width:100%;}
 .fusion-actions .btn{flex:1;}
 #screen-5 .nav-row{margin-top:16px;}
@@ -228,8 +243,13 @@ canvas#fusionCanvas{width:100%;height:auto;border-radius:24px;display:block;box-
         <h1 class="title">盲抽符號卡</h1>
         <p class="lead">憑直覺，從牌堆中選出 3～4 張——先別急著翻開它。</p>
       </div>
-      <div class="draw-status"><span class="hint" style="padding:0;margin:0;">左右滑動查看整副牌</span><span class="count">已選 <b id="selCount">0</b>/4</span></div>
+      <div class="draw-status"><span class="hint" style="padding:0;margin:0;">滑動或拖曳下方滑軌查看整副牌</span><span class="count">已選 <b id="selCount">0</b>/4</span></div>
       <div class="deckwrap"><div class="deck" id="deck"></div></div>
+      <div class="deck-controls">
+        <div class="scroll-arrow" id="scrollLeftBtn">‹</div>
+        <div class="scroll-track" id="scrollTrack"><div class="scroll-thumb" id="scrollThumb"></div></div>
+        <div class="scroll-arrow" id="scrollRightBtn">›</div>
+      </div>
       <p class="hint">至少選 3 張，最多 4 張</p>
       <div class="nav-row"><button class="btn btn-primary btn-block" id="toStep4Btn" disabled>翻開卡牌</button></div>
     </section>
@@ -251,13 +271,17 @@ canvas#fusionCanvas{width:100%;height:auto;border-radius:24px;display:block;box-
     <section class="screen" id="screen-5">
       <div class="eyebrow">Step 04</div>
       <h1 class="title">你的專屬符號卡</h1>
-      <p class="lead">將你選中的符號與顏色疊合而成，僅屬於此刻的你。</p>
-      <div class="fusion-stage"><canvas id="fusionCanvas" width="600" height="840"></canvas></div>
-      <div class="fusion-actions">
+      <p class="lead">你選中的符號先攤開在你面前——點擊「融合符號」，看它們疊合成僅屬於此刻的一張卡。</p>
+      <div class="fusion-stage" id="fusionStage">
+        <div class="fusion-spread" id="fusionSpread"></div>
+        <canvas id="fusionCanvas" width="600" height="840"></canvas>
+      </div>
+      <button class="btn btn-primary" id="fuseBtn">融合符號</button>
+      <div class="fusion-actions" id="fusionActions" style="display:none;">
         <button class="btn btn-ghost" id="downloadBtn">下載圖片</button>
         <button class="btn btn-ghost" id="shareBtn">分享</button>
       </div>
-      <div class="nav-row"><button class="btn btn-primary btn-block" id="toStep6Btn">取得探索提示詞</button></div>
+      <div class="nav-row"><button class="btn btn-primary btn-block" id="toStep6Btn" disabled>取得探索提示詞</button></div>
     </section>
 
     <!-- SCREEN 6 -->
@@ -515,6 +539,61 @@ function initDeck(){
     back.addEventListener('click',()=>toggleCard(i));
     deckEl.appendChild(back);
   });
+  setupDeckScroller();
+}
+
+/* ---- deck horizontal scroll rail ---- */
+let deckwrapEl, scrollTrackEl, scrollThumbEl;
+function setupDeckScroller(){
+  deckwrapEl = document.querySelector('.deckwrap');
+  scrollTrackEl = document.getElementById('scrollTrack');
+  scrollThumbEl = document.getElementById('scrollThumb');
+
+  document.getElementById('scrollLeftBtn').addEventListener('click',()=>{
+    deckwrapEl.scrollBy({left:-220,behavior:'smooth'});
+  });
+  document.getElementById('scrollRightBtn').addEventListener('click',()=>{
+    deckwrapEl.scrollBy({left:220,behavior:'smooth'});
+  });
+  deckwrapEl.addEventListener('scroll',syncThumb);
+  window.addEventListener('resize',syncThumb);
+
+  let dragging=false, dragStartX=0, dragStartScroll=0;
+  scrollThumbEl.addEventListener('pointerdown',(e)=>{
+    dragging=true; dragStartX=e.clientX; dragStartScroll=deckwrapEl.scrollLeft;
+    scrollThumbEl.setPointerCapture(e.pointerId);
+  });
+  scrollThumbEl.addEventListener('pointermove',(e)=>{
+    if(!dragging) return;
+    const trackW = scrollTrackEl.clientWidth - scrollThumbEl.clientWidth;
+    const maxScroll = deckwrapEl.scrollWidth - deckwrapEl.clientWidth;
+    const dx = e.clientX - dragStartX;
+    const ratio = trackW>0 ? dx/trackW : 0;
+    deckwrapEl.scrollLeft = dragStartScroll + ratio*maxScroll;
+  });
+  scrollThumbEl.addEventListener('pointerup',()=>{dragging=false;});
+  scrollThumbEl.addEventListener('pointercancel',()=>{dragging=false;});
+
+  scrollTrackEl.addEventListener('click',(e)=>{
+    if(e.target===scrollThumbEl) return;
+    const rect = scrollTrackEl.getBoundingClientRect();
+    const ratio = (e.clientX-rect.left)/rect.width;
+    const maxScroll = deckwrapEl.scrollWidth - deckwrapEl.clientWidth;
+    deckwrapEl.scrollTo({left: ratio*maxScroll, behavior:'smooth'});
+  });
+
+  requestAnimationFrame(syncThumb);
+}
+function syncThumb(){
+  if(!deckwrapEl) return;
+  const trackW = scrollTrackEl.clientWidth;
+  const maxScroll = deckwrapEl.scrollWidth - deckwrapEl.clientWidth;
+  const visibleRatio = Math.min(1, deckwrapEl.clientWidth / deckwrapEl.scrollWidth);
+  const thumbW = Math.max(40, trackW*visibleRatio);
+  scrollThumbEl.style.width = thumbW+'px';
+  const maxThumbLeft = Math.max(0, trackW - thumbW);
+  const scrollRatio = maxScroll>0 ? deckwrapEl.scrollLeft/maxScroll : 0;
+  scrollThumbEl.style.left = (scrollRatio*maxThumbLeft)+'px';
 }
 function toggleCard(i){
   const idx = state.selected.indexOf(i);
@@ -550,18 +629,15 @@ function renderReveal(){
   const card = document.getElementById('flipcard');
   const currentColor = state.colors[deckIdx];
   card.innerHTML = `
-    <div class="flip-icon">${iconSVG(sym,60)}</div>
+    <div class="flip-icon" id="flipIcon">${iconSVG(sym,150)}</div>
     <h2 class="flip-name">${sym.name}</h2>
-    <div class="tag-row">
-      <span class="tag">${sym.noun}</span><span class="tag">${sym.adj}</span><span class="tag">${sym.emo}</span>
-    </div>
-    <div class="qbox"><p>${sym.q[0]}</p><p>${sym.q[1]}</p></div>
     <div class="colorpick">
       <div class="label">選一個屬於此刻的顏色</div>
       <div class="swatches" id="swatches"></div>
       <div class="color-meaning" id="colorMeaning">${currentColor? describeColor(currentColor):'&nbsp;'}</div>
     </div>
   `;
+  if(currentColor) document.getElementById('flipIcon').style.color = currentColor;
   const sw = document.getElementById('swatches');
   COLOR_REF.forEach(c=>{
     const dot = el(`<div class="swatch" style="background:${c.hex}" data-hex="${c.hex}" title="${c.name}"></div>`);
@@ -569,9 +645,6 @@ function renderReveal(){
     dot.addEventListener('click',()=>setColor(deckIdx,c.hex));
     sw.appendChild(dot);
   });
-  const customWrap = el(`<div class="swatch custom" title="自訂顏色">+<input type="color" id="customColor"></div>`);
-  sw.appendChild(customWrap);
-  document.getElementById('customColor').addEventListener('input',(e)=>setColor(deckIdx,e.target.value));
 
   document.getElementById('prevCardBtn').disabled = state.revealIndex===0;
   document.getElementById('nextCardBtn').disabled = state.revealIndex===state.selected.length-1;
@@ -614,6 +687,76 @@ function drawIconOnCanvas(ctx,sym,cx,cy,size,color,alpha,rotation){
   ctx.restore();
 }
 function renderFusion(){
+  // reset to the initial "stacked" state, waiting for the fuse action
+  const spread = document.getElementById('fusionSpread');
+  const canvas = document.getElementById('fusionCanvas');
+  canvas.classList.remove('show');
+  spread.classList.remove('hide');
+  spread.innerHTML='';
+  const n = state.selected.length;
+  const spreadPct = n===3 ? [-34,0,34] : [-48,-16,16,48];
+  state.selected.forEach((deckIdx,i)=>{
+    const sym = SYMBOLS[state.deck[deckIdx].symbolIndex];
+    const color = state.colors[deckIdx] || '#ffffff';
+    const card = el(`<div class="mini-card"></div>`);
+    card.style.zIndex = String(10+i);
+    card.innerHTML = `<div class="mc-icon" style="color:${color}">${iconSVG(sym,60)}</div><span>${sym.name}</span>`;
+    // initial: gently stacked, waiting
+    const stackRot = (i - (n-1)/2) * 4;
+    card.style.transform = `translateX(0%) rotate(${stackRot}deg) scale(.8)`;
+    card.style.opacity = String(0.55 + i*0.12);
+    // targets used by the two animation phases
+    const fanRot = (i - (n-1)/2) * 10;
+    const finalRot = (i%2===0?-1:1) * (5+i);
+    card.dataset.spread = `translateX(${spreadPct[i]||0}%) rotate(${fanRot}deg) scale(1)`;
+    card.dataset.final = `translateX(0%) rotate(${finalRot}deg) scale(.9)`;
+    spread.appendChild(card);
+  });
+  document.getElementById('fuseBtn').style.display='inline-flex';
+  document.getElementById('fuseBtn').disabled = false;
+  document.getElementById('fusionActions').style.display='none';
+  document.getElementById('toStep6Btn').disabled = true;
+}
+function fuseCards(){
+  const fuseBtn = document.getElementById('fuseBtn');
+  fuseBtn.disabled = true;
+  const cards = Array.from(document.querySelectorAll('.mini-card'));
+  const n = cards.length;
+  const stagger = 100, dur = 800, holdPause = 300;
+
+  // phase 1 — spread all cards out
+  cards.forEach((c,i)=>{
+    setTimeout(()=>{
+      c.style.opacity = '1';
+      c.style.transform = c.dataset.spread;
+    }, i*stagger);
+  });
+  const phaseAEnd = (n-1)*stagger + dur;
+
+  // phase 2 — converge back together, overlapping
+  setTimeout(()=>{
+    cards.forEach((c,i)=>{
+      setTimeout(()=>{
+        c.style.transform = c.dataset.final;
+        c.style.opacity = '0.88';
+      }, i*stagger);
+    });
+  }, phaseAEnd + holdPause);
+  const phaseBEnd = phaseAEnd + holdPause + (n-1)*stagger + dur;
+
+  // reveal the composed card
+  setTimeout(()=>{
+    document.getElementById('fusionSpread').classList.add('hide');
+    drawFusionCanvas();
+    document.getElementById('fusionCanvas').classList.add('show');
+    fuseBtn.style.display='none';
+    document.getElementById('fusionActions').style.display='flex';
+    document.getElementById('toStep6Btn').disabled=false;
+  }, phaseBEnd + 250);
+}
+document.getElementById('fuseBtn').addEventListener('click',fuseCards);
+
+function drawFusionCanvas(){
   const canvas = document.getElementById('fusionCanvas');
   const ctx = canvas.getContext('2d');
   const W=canvas.width, H=canvas.height;
