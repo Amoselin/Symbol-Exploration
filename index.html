@@ -100,6 +100,7 @@ textarea:focus{border-color:var(--amber-dim);}
 .chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
 .chip{font-size:12.5px;padding:8px 13px;border-radius:100px;background:rgba(255,255,255,.03);border:1px solid var(--line);color:var(--ink-dim);cursor:pointer;transition:.2s;}
 .chip:hover{border-color:var(--amber-dim);color:var(--ink);}
+.chip.active{border-color:var(--amber);color:var(--ink);background:rgba(255,90,43,.1);}
 #screen-2 .nav-row{margin-top:auto;padding-top:22px;}
 
 /* generic nav row */
@@ -514,10 +515,20 @@ issueInput.addEventListener('input',()=>{
 });
 (function buildChips(){
   const row=document.getElementById('chipRow');
+  let lastChipInsert = '';
   ISSUE_HINTS.forEach(h=>{
     const c=el(`<div class="chip">${h}</div>`);
     c.addEventListener('click',()=>{
-      issueInput.value = (issueInput.value ? issueInput.value+'\n' : '') + '關於「'+h+'」，我目前的感覺是⋯⋯';
+      const template = '關於「'+h+'」，我目前的感覺是⋯⋯';
+      let val = issueInput.value;
+      if(lastChipInsert && val.includes(lastChipInsert)){
+        val = val.replace(lastChipInsert,'').replace(/\n{2,}/g,'\n');
+      }
+      val = val.replace(/\n+$/,'');
+      issueInput.value = (val ? val+'\n' : '') + template;
+      lastChipInsert = template;
+      row.querySelectorAll('.chip').forEach(ch=>ch.classList.remove('active'));
+      c.classList.add('active');
       issueInput.dispatchEvent(new Event('input'));
       issueInput.focus();
     });
@@ -845,7 +856,7 @@ document.getElementById('toStep6Btn').addEventListener('click',()=>goTo(6));
 /* ---- Screen 6 : prompt ---- */
 function buildPrompt(){
   const lines=[];
-  lines.push('你是一位融合榮格心理學（原型與象徵）與敘事引導的探索夥伴。以下是我透過「神秘符號探索」抽出的個人化符號組合，請你根據這些資訊，陪我進行一場深入但溫和的自我探索對話，不要急著給答案或建議。');
+  lines.push('你是一位融合榮格心理學（原型與象徵）與敘事引導的探索夥伴。以下是我透過「神秘符號探索」抽出的個人化符號組合，請你陪我進行一場深入但溫和的自我探索對話。');
   lines.push('');
   lines.push('【我目前想探索的議題】');
   lines.push(state.issue || '（尚未特別描述，請先邀請我說說看）');
@@ -855,18 +866,30 @@ function buildPrompt(){
     const sym = SYMBOLS[state.deck[deckIdx].symbolIndex];
     const hex = state.colors[deckIdx];
     const cref = hex? nearestColorMeaning(hex) : null;
-    lines.push(`${i+1}. ${sym.name}（${sym.noun}／${sym.adj}／${sym.emo}）－我直覺選的顏色接近「${cref?cref.name:'未指定'}」（${cref?cref.noun+'・'+cref.emo:''}）`);
+    const colorLabel = cref ? (cref.name.includes('／') ? cref.name : cref.name+'色') : '未指定顏色';
+    const colorMeaning = cref ? `${cref.noun}・${cref.emo}` : '';
+    lines.push(`${i+1}. ${sym.name}（${sym.noun}／${sym.adj}／${sym.emo}）－${colorLabel}（${colorMeaning}）`);
     lines.push(`   反思提示：${sym.q[0]}／${sym.q[1]}`);
   });
   lines.push('');
-  lines.push('請你依照以下方式引導我：');
-  lines.push('1. 先簡短說明這幾個符號與顏色組合，在原型意象上可能透露出的共通主題或張力，用邀請式的語氣，不要下定論。');
-  lines.push('2. 針對我的議題，挑一個最有共鳴的符號，用一個開放式問題邀請我先自由聯想，不用急著分析。');
-  lines.push('3. 陪我一層層探索：這個符號讓我想到生命中的什麼場景、關係或感受？它想告訴我什麼？');
-  lines.push('4. 適時反映我話語中透露、但我自己可能沒意識到的情緒或矛盾，幫我看見盲點，而不是替我下結論。');
-  lines.push('5. 最後，陪我把探索到的洞察收斂成一句屬於我自己的話，或一個具體的下一步小行動。');
+  lines.push('請嚴格遵守以下規則進行引導：');
   lines.push('');
-  lines.push('請用溫暖、不批判、留白的語氣，一次只問一個問題，讓對話自然展開。');
+  lines.push('【核心原則】');
+  lines.push('- 你的角色是鏡子，不是解讀者。不要替我下結論、貼心理學標籤（例如「這是你的陰影」），也不要主動解釋符號的原型意義。');
+  lines.push('- 意義必須由我自己說出來，你只負責用問題邀請我往下探索。');
+  lines.push('- 每一次回覆，最多只問一個問題。問完就停下來，等我回答。');
+  lines.push('- 語氣溫暖、留白、不批判，允許沉默和「不知道」。');
+  lines.push('');
+  lines.push('【對話流程】');
+  lines.push('1. 先邀請我自己看著這幾個符號和顏色，說出當下浮現的直覺或畫面，不要你先給說明或框架。');
+  lines.push('2. 邀請我從這幾個裡面，自己選出此刻感覺最「抓住」我的那一個（不一定是喜歡的，可能是最不舒服或最陌生的）。');
+  lines.push('3. 針對我選的符號，先問一個開放式問題，讓我自由聯想，不急著往議題上靠。');
+  lines.push('4. 隨著我的回答，一層層追問：這讓我想到生命中的什麼場景、關係或感受？陪我自己把符號和議題的關聯說出來，不要你先幫我連起來。');
+  lines.push('5. 如果我的話裡出現情緒或矛盾，用反映式提問溫和點出（例如「聽起來你剛剛提到⋯⋯又說⋯⋯，這兩者放在一起，你有什麼感覺？」），而不是直接告訴我這代表什麼。');
+  lines.push('6. 最後，邀請我自己把探索到的洞察收斂成一句屬於我自己的話，或一個具體的下一步小行動——這句話和行動必須由我說出來，你可以幫我把它清楚地覆述一次。');
+  lines.push('');
+  lines.push('【安全提醒】');
+  lines.push('如果我在對話中透露出強烈的絕望感、自我傷害的念頭，或明顯需要專業協助的訊號，請溫和地暫停探索，鼓勵我尋求心理專業人員或信任的人的支持，並可以提供撥打衛福部安心專線 1925 的建議，而不要繼續深挖情緒。');
   return lines.join('\n');
 }
 document.getElementById('copyBtn').addEventListener('click', async ()=>{
