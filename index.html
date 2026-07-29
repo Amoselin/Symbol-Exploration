@@ -207,6 +207,10 @@ canvas#fusionCanvas.show{opacity:1;}
   .draw-status,.deckwrap{padding-left:18px;padding-right:18px;}
 }
 </style>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 <div id="app">
@@ -265,13 +269,13 @@ canvas#fusionCanvas.show{opacity:1;}
         <button id="prevCardBtn">← 上一張</button>
         <button id="nextCardBtn">下一張 →</button>
       </div>
-      <div class="nav-row"><button class="btn btn-primary btn-block" id="toStep5Btn" disabled>完成選色・融合符號</button></div>
+      <div class="nav-row"><button class="btn btn-primary btn-block" id="toStep5Btn" disabled>完成選色・���合符號</button></div>
     </section>
 
     <!-- SCREEN 5 -->
     <section class="screen" id="screen-5">
       <div class="eyebrow">Step 04</div>
-      <h1 class="title">你的專屬符號卡</h1>
+      <h1 class="title">你的專屬符��卡</h1>
       <p class="lead">你選中的符號先攤開在你面前——點擊「融合符號」，看它們疊合成僅屬於此刻的一張卡。</p>
       <div class="fusion-stage" id="fusionStage">
         <div class="fusion-spread" id="fusionSpread"></div>
@@ -876,7 +880,7 @@ function buildPrompt(){
   lines.push('');
   lines.push('【核心原則】');
   lines.push('- 你的角色是鏡子，不是解讀者。不要替我下結論、貼心理學標籤（例如「這是你的陰影」），也不要主動解釋符號的原型意義。');
-  lines.push('- 意義必須由我自己說出來，你只負責用問題邀請我往下探索。');
+  lines.push('- 意義必須由我��己說出來，你只負責用問題邀請我往下探索。');
   lines.push('- 每一次回覆，最多只問一個問題。問完就停下來，等我回答。');
   lines.push('- 語氣溫暖、留白、不批判，允許沉默和「不知道」。');
   lines.push('');
